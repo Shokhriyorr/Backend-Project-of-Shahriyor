@@ -1,7 +1,7 @@
 Academy Portal - Final Submission Checklist
 
-[x] docker compose -f docker-compose.local.yml up --build boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
-[x] docker-compose.local.yml orchestrates backend + worker + frontend + PostgreSQL 15 + Redis
+[x] docker compose up --build boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
+[x] docker-compose.yml orchestrates backend + worker + frontend + PostgreSQL 15 + Redis
 [x] apps/api and frontend contain the backend and frontend source code
 [x] openapi.yaml contains the OpenAPI contract
 [x] migrations/ contains the Prisma migration history
@@ -25,8 +25,9 @@ Academy Portal - Final Submission Checklist
 [x] Production compose overlay documented in docker-compose.prod.yml
 [x] DeployRocks/Render guide present in docs/deployment/deployrocks.md
 
-[ ] Application is LIVE on dashboard.deployrocks.com or Render (see DEPLOY-NOW.txt)
-[ ] DEPLOYED_URL.txt contains the final public frontend URL
+[ ] Application is LIVE on dashboard.deployrocks.com or Render (see DEPLOY-FIX-RU.txt)
+[ ] DEPLOYED_URL.txt URL opens Academy Portal (not placeholder "Aloha" page)
+[ ] DEPLOYED_URL.txt /health and /docs return 200 on production
 [x] Root Dockerfile + deployrocks.env.example ready for single-app DeployRocks
 [ ] VIDEO_LINK.txt contains the defense recording URL
 [ ] Production secrets configured (JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, EMAIL_API_KEY/SMTP_PASS, CORS_ORIGINS)
@@ -37,11 +38,11 @@ Academy Portal - Final Submission Checklist
 
 Local full stack from .env.example:
   cp .env.example .env
-  docker compose -f docker-compose.local.yml up --build
+  docker compose up --build
   Frontend: http://localhost:8080
   Swagger:  http://localhost:8080/docs
 
-DeployRocks: use root Dockerfile, no Compose file (see DEPLOY-NOW.txt)
+DeployRocks: use root Dockerfile, empty Compose file field (see DEPLOY-FIX-RU.txt)
 
 Local production overlay (SMTP):
-  docker compose -f docker-compose.local.yml -f docker-compose.prod.yml up --build
+  docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build

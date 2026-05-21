@@ -1,62 +1,49 @@
 ═══════════════════════════════════════════════════════════════
-  ИСПРАВЛЕНИЕ ОШИБОК DEPLOYROCKS (по вашим логам)
+  ИСПРАВЛЕНИЕ DEPLOYROCKS / KAZI.ROCKS (финальная сдача)
 ═══════════════════════════════════════════════════════════════
 
-У вас 3 ошибки:
-
-  A) Деплоится WORKER — он не сайт → "No web listeners"
-  B) Сеть ...-net does not exist → api/frontend падают
-  C) Используется не тот compose (3 приложения вместо 2)
+КРИТИЧНО: если по URL открывается страница "Aloha" — это НЕ ваш
+Academy Portal. Нужен повторный деплой из ЭТОГО репозитория.
 
 ───────────────────────────────────────────────────────────────
-ШАГ 1 — Запушить исправления в GitHub (на компьютере)
+ШАГ 1 — Запушить код в GitHub
 ───────────────────────────────────────────────────────────────
-
-Откройте PowerShell:
 
   cd C:\Users\Shokh\Desktop\PROJECT
   git add .
-  git status
-  git commit -m "Fix DeployRocks: dokku PORT, compose without worker"
+  git commit -m "Add docker-compose.yml and fix deploy docs"
   git push
 
-Без push платформа собирает старый код.
-
 ───────────────────────────────────────────────────────────────
-ШАГ 2 — DeployRocks: правильный Compose file
+ШАГ 2 — DeployRocks: режим Dockerfile (без Compose file)
 ───────────────────────────────────────────────────────────────
 
 1. https://dashboard.deployrocks.com
-2. Ваш проект → Settings (Настройки)
-3. Поле "Compose file" — ДОЛЖНО БЫТЬ ТОЧНО:
+2. Проект → Settings
+3. Поле "Compose file" — ОСТАВЬТЕ ПУСТЫМ (не указывайте compose-файл)
+4. Деплой идёт из корневого Dockerfile (frontend + API + worker в одном контейнере)
 
-     compose.deployrocks.yaml
+Подробно: docs/deployment/deployrocks-fix.md
 
-   НЕ docker-compose.yml
-   НЕ docker-compose.local.yml
+Локально для рубрики (экзаменатор может проверить):
 
-4. Save / Сохранить
-
-───────────────────────────────────────────────────────────────
-ШАГ 3 — УДАЛИТЬ приложение WORKER (обязательно!)
-───────────────────────────────────────────────────────────────
-
-В списке Apps / Applications найдите:
-
-  shokhriyorr-backend-project-of-shahriyor-worker
-
-→ Delete / Destroy / Remove (удалить полностью)
-
-Worker НЕ нужен отдельно. Очереди работают внутри api.
-
-Если есть ДВА одинаковых api или frontend — удалите лишние
-(оставьте по одному api и одному frontend).
+  cp .env.example .env
+  docker compose up --build
 
 ───────────────────────────────────────────────────────────────
-ШАГ 4 — Environment (переменные) — только ЧИСЛА для TTL
+ШАГ 3 — Удалить лишние приложения
 ───────────────────────────────────────────────────────────────
 
-В Environment проекта задайте ВРУЧНУЮ (не оставляйте случайные строки):
+Удалите отдельные apps, если создавались:
+
+  ...-worker
+  ...-api (если есть второй, кроме main)
+
+Должно остаться одно web-приложение с корневым Dockerfile.
+
+───────────────────────────────────────────────────────────────
+ШАГ 4 — Environment (числа для TTL — только цифры!)
+───────────────────────────────────────────────────────────────
 
   EMAIL_VERIFICATION_TTL_MINUTES=1440
   PASSWORD_RESET_TTL_MINUTES=30
@@ -68,52 +55,39 @@ Worker НЕ нужен отдельно. Очереди работают вну�
   ENABLE_BACKGROUND_WORKERS=true
   EMAIL_PROVIDER=smtp
 
-  JWT_SECRET_KEY=<ваш секрет 32+ символа>
-  JWT_REFRESH_SECRET_KEY=<другой секрет 32+ символа>
-  SMTP_PASS=<ключ SendGrid/Mailgun>
+  JWT_SECRET_KEY=<32+ символов>
+  JWT_REFRESH_SECRET_KEY=<другой 32+ символов>
+  SMTP_PASS=<Gmail App Password или SendGrid>
   EMAIL_FROM_ADDRESS=Academy Portal <ваш@email.com>
 
-  PUBLIC_APP_URL=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
-  CORS_ORIGINS=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
+  PUBLIC_APP_URL=https://ВАШ-ДОМЕН.kazi.rocks
+  CORS_ORIGINS=https://ВАШ-ДОМЕН.kazi.rocks
 
-Сгенерировать JWT:
+Секреты:
 
   powershell -ExecutionPolicy Bypass -File scripts\generate-deploy-secrets.ps1
 
-DATABASE_URL и REDIS_URL — НЕ трогать, если платформа уже подставила.
+DATABASE_URL и REDIS_URL — не менять, если платформа уже подставила.
 
 ───────────────────────────────────────────────────────────────
-ШАГ 5 — Проверить Postgres и Redis
+ШАГ 5 — Postgres и Redis зелёные → Deploy
 ───────────────────────────────────────────────────────────────
 
-В проекте должны быть зелёные:
+После Live проверьте:
 
-  ...-db (postgres)
-  ...-redis (redis)
+  https://ВАШ-ДОМЕН/health   → 200
+  https://ВАШ-ДОМЕН/docs    → Swagger
+  https://ВАШ-ДОМЕН/        → React Academy Portal (не Aloha!)
 
-Если красные — дождитесь или пересоздайте плагины, потом шаг 6.
-
-───────────────────────────────────────────────────────────────
-ШАГ 6 — Deploy снова (2 раза если нужно)
-───────────────────────────────────────────────────────────────
-
-1. Нажмите Deploy / Retry deploy
-2. Должно быть только 2 приложения: api + frontend (НЕ worker)
-3. Если снова "Network ... does not exist" — подождите 1 минуту
-   и нажмите Retry deploy ЕЩЁ РАЗ (сеть часто создаётся после 1-й попытки)
-
-Успех:
-
-  Deployed (2): api, frontend
+Запишите URL в DEPLOYED_URL.txt и VIDEO_LINK.txt → git push
 
 ───────────────────────────────────────────────────────────────
-ШАГ 7 — Проверка в браузере
+Защита (oral defense)
 ───────────────────────────────────────────────────────────────
 
-  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health
-  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/docs
-  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
+Откройте вкладки:
+  - Live frontend (DEPLOYED_URL.txt)
+  - Postman: docs/api/postman/academy-defense.postman_collection.json
+  - Swagger /docs на том же домене
 
-Запишите URL в DEPLOYED_URL.txt → git push
-
-═══════════════════════════════════════════════════════════════
+Сценарий: docs/defense-script.md

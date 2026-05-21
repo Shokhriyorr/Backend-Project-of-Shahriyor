@@ -32,7 +32,8 @@ Full-stack final defense project: Express + Prisma backend, React demo frontend,
 |-- DEPLOYED_URL.txt        Public deployed frontend URL
 |-- VIDEO_LINK.txt          Defense video link
 |-- scripts/                Root verification/automation scripts
-|-- docker-compose.local.yml API + worker + frontend + PostgreSQL + Redis
+|-- docker-compose.yml      API + worker + frontend + PostgreSQL + Redis (rubric)
+|-- docker-compose.local.yml Alias that includes docker-compose.yml
 |-- Dockerfile              DeployRocks single-container image
 |-- .env.example            Local and production environment template
 `-- package.json            Root orchestration scripts
@@ -42,7 +43,7 @@ Full-stack final defense project: Express + Prisma backend, React demo frontend,
 
 ```bash
 cp .env.example .env
-docker compose -f docker-compose.local.yml up --build
+docker compose up --build
 ```
 
 Default local URLs from `.env.example`:
@@ -128,7 +129,7 @@ npm run dev
 npm run verify
 ```
 
-This runs backend Jest tests, syntax/raw-SQL lint checks, frontend production build, and `docker compose -f docker-compose.local.yml config`.
+This runs backend Jest tests, syntax/raw-SQL lint checks, frontend production build, and `docker compose config`.
 
 Quality tooling:
 
@@ -153,7 +154,7 @@ See `docs/deployment/deployrocks.md` for the full DeployRocks/Render checklist.
 
 1. Push the full repository to GitHub.
 2. Create a DeployRocks or Render project from the repository.
-3. On DeployRocks, do not set a Compose file. Deploy the repository from the root `Dockerfile`, which runs frontend, API, and workers in one web container to avoid cross-app Dokku network failures. For Render or local production smoke tests, use `docker compose -f docker-compose.local.yml -f docker-compose.prod.yml up --build`.
+3. On DeployRocks, do not set a Compose file. Deploy the repository from the root `Dockerfile`, which runs frontend, API, and workers in one web container to avoid cross-app Dokku network failures. For Render or local production smoke tests, use `docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build`.
 4. Configure production environment variables in the platform dashboard:
    - `ENVIRONMENT=production`
    - `NODE_ENV=production`
