@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: academy_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - academy-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d academy_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+  api:
+    build:
+      context: .
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/academy_db
+      JWT_SECRET: docker-local-demo-secret-at-least-32-characters
+      JWT_ACCESS_TTL_SECONDS: 900
+      JWT_REFRESH_TTL_DAYS: 30
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      ENABLE_DAILY_STATS_JOB: true
+      PUBLIC_APP_URL: http://localhost:5173
+      EMAIL_PROVIDER: log
+      EMAIL_FROM: Academy Portal <no-reply@example.com>
+      EMAIL_LOG_PATH: email.out.log
+      SMTP_HOST: smtp.example.com
+      SMTP_PORT: '587'
+      SMTP_USER: ''
+      SMTP_PASS: ''
+      SMTP_SECURE: 'false'
+      ENABLE_BACKGROUND_WORKERS: true
+      REDIS_URL: redis://redis:6379
+      ADMIN_NOTIFICATION_EMAILS: ''
+    ports:
+      - '3000:3000'
+    command: sh -c "npm run prisma:deploy && npm start"
+
+volumes:
+  academy-postgres:

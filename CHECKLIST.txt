@@ -1,0 +1,40 @@
+Academy Portal - Final Submission Checklist
+
+[x] docker compose up boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
+[x] docker-compose.yml orchestrates backend + worker + frontend + PostgreSQL 15 + Redis
+[x] server/ and frontend/ directories present with source code
+[x] openapi.yaml in repository root
+[x] migrations/ Prisma history available
+[x] tests/ Jest suites available
+[x] README.md includes setup, architecture, testing, and deployment instructions
+[x] .env.example documents all required variables
+[x] CHECKLIST.txt present
+[x] CHANGELOG.md present
+[x] DEFENSE_SCRIPT.md present for oral defense
+[x] Postman collection present in postman/
+[x] Auth lifecycle implemented (register, verify, login, refresh, logout, reset)
+[x] RBAC enforced (student/admin)
+[x] Redis rate limiting on auth endpoints
+[x] BullMQ background workers for email and maintenance jobs
+[x] Frontend demo consumes the real API
+[x] BYOI complexity requirements tagged in code
+[x] No raw SQL in application source
+[x] npm run verify passes locally
+
+[ ] Application is LIVE on dashboard.deployrocks.com or Render
+[ ] DEPLOYED_URL.txt contains the public frontend URL
+[ ] VIDEO_LINK.txt contains the defense recording URL
+[ ] Production secrets configured (JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, EMAIL_API_KEY/SMTP_PASS, CORS_ORIGINS)
+[ ] Real SMTP inbox demonstrated on deployed environment (EMAIL_PROVIDER=smtp)
+[ ] openapi.yaml validated in editor.swagger.io
+[ ] Postman tabs prepared for defense
+[ ] I am the sole author of the architectural decisions in this code
+
+Local full stack from .env.example:
+  cp .env.example .env
+  docker compose up --build
+  Frontend: http://localhost:8080
+  Swagger:  http://localhost:3000/docs
+
+Production overlay:
+  docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build

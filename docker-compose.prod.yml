@@ -1,0 +1,18 @@
+# Production overlay for DeployRocks / Render.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+
+services:
+  api:
+    environment:
+      NODE_ENV: production
+      ENVIRONMENT: production
+      EMAIL_PROVIDER: smtp
+      ENABLE_BACKGROUND_WORKERS: 'true'
+      START_WORKERS_IN_API: 'false'
+  worker:
+    environment:
+      NODE_ENV: production
+      ENVIRONMENT: production
+      EMAIL_PROVIDER: smtp
+      ENABLE_BACKGROUND_WORKERS: 'true'
+      START_WORKERS_IN_API: 'false'

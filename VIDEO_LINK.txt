@@ -1,0 +1,4 @@
+https://REPLACE-WITH-YOUR-DEFENSE-VIDEO
+
+Upload an unlisted YouTube/Google Drive video that follows DEFENSE_SCRIPT.md.
+The recording must show the deployed public URL (not only localhost).

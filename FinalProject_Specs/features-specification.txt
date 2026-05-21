@@ -1,0 +1,268 @@
+ACADEMY PORTAL
+features-specification.txt
+
+1. Project Summary
+
+Academy Portal is a full-stack online learning platform where visitors can browse a course catalog, students can register and enroll in courses, and administrators can manage courses, categories, and teacher profiles.
+
+The target backend is an Express.js API with Prisma ORM and PostgreSQL. The system is read-heavy on public catalog requests and write-sensitive on enrollment operations, so the functional specification must protect integrity, authorization boundaries, and future growth.
+
+Version 1 scope:
+- Public browsing of published courses
+- Student authentication
+- Student enrollment and unenrollment
+- Admin CRUD for courses, categories, and teachers
+- JWT-based authorization
+- Auditability for admin changes
+
+2. User Roles and Actors
+
+2.1 Guest
+- Unauthenticated visitor
+- Can browse public course data
+- Can search, filter, and open course details
+- Can register and log in
+
+2.2 Student
+- Authenticated user with role = student
+- Can do everything a guest can do
+- Can view personal enrollments
+- Can enroll in and remove personal course enrollments
+
+2.3 Admin
+- Authenticated user with role = admin
+- Can do everything a guest can do
+- Can create, update, publish, archive, and delete catalog entities
+- Can manage courses, teachers, and categories
+- Can inspect enrollment metrics and audit trails
+
+2.4 Teacher Profile
+- Teacher is a managed domain entity, not a login role in v1
+- Teacher records are public-facing catalog profiles attached to courses
+- Teacher creation and maintenance are performed by admins only
+
+3. Functional Requirements and User Stories
+
+3.1 Guest Features
+
+Functional requirements:
+- View the home page and public catalog
+- View only courses with status = published
+- Search by course name, short description, teacher name, and category name
+- Filter courses by category, level, and teacher
+- Open a course details page
+- View teacher summaries and category information
+- Register a new student account
+- Log in with email and password
+
+User stories:
+- As a guest, I want to browse available courses so I can decide what to study.
+- As a guest, I want to filter courses by category and level so I can find relevant content faster.
+- As a guest, I want to open a course details page so I can understand the syllabus before registering.
+- As a guest, I want to create an account so I can enroll in courses later.
+
+3.2 Student Features
+
+Functional requirements:
+- Access all guest features
+- View current user profile data from the JWT-backed session
+- Open a "My Courses" page
+- Enroll in a course
+- Remove an enrollment from a course
+- See enrollment status in the UI and API response
+- Receive a conflict error when attempting a duplicate enrollment
+
+User stories:
+- As a student, I want to enroll in a published course so I can track it in My Courses.
+- As a student, I want to see all of my active enrollments in one place so I can manage my study plan.
+- As a student, I want the system to prevent duplicate enrollments so my dashboard remains accurate.
+- As a student, I want to remove a course from My Courses so I can keep my list current.
+
+3.3 Admin Features
+
+Functional requirements:
+- Access all guest features
+- Create, update, and archive courses
+- Create, update, and delete teacher profiles
+- Create, update, and delete categories
+- Publish a draft course only when required fields are complete
+- Prevent deletion of teachers/categories that are still referenced by active courses
+- Inspect course enrollment counts and daily metrics
+- Produce audit log records for every catalog mutation
+
+User stories:
+- As an admin, I want to create a new course so students can enroll in it.
+- As an admin, I want to edit category and teacher data so the catalog stays accurate.
+- As an admin, I want to publish only complete courses so incomplete records are not exposed publicly.
+- As an admin, I want audit logs for every catalog change so I can trace who changed what and when.
+
+4. Business Workflows
+
+4.1 Registration and Login Flow
+
+1. Guest submits email, password, and role = student.
+2. Backend validates request shape, password length, and allowed role values.
+3. Backend checks whether email already exists.
+4. Password is hashed with bcrypt before persistence.
+5. User record is inserted into app_users.
+6. Backend queues an email verification message.
+7. User verifies email before login is allowed.
+8. On login, backend verifies email/password pair and records last_login_at.
+
+Admin accounts are provisioned through the controlled `seed-admin` script, not public signup.
+
+4.2 Public Catalog Browsing Flow
+
+1. Guest or authenticated user requests GET /api/courses.
+2. Backend applies cursor pagination and filters.
+3. Only status = published courses are returned to non-admins.
+4. Backend joins teacher and category data.
+5. API returns data array plus pagination metadata.
+6. Client displays cards, search result count, and filter state.
+
+4.3 Safe Enrollment Flow
+
+1. Student opens a published course details page.
+2. Student clicks Enroll.
+3. Backend verifies JWT and role = student.
+4. Backend starts a database transaction.
+5. Backend loads the course and confirms status = published.
+6. Backend verifies the student is not already enrolled.
+7. Backend confirms seats_taken < capacity.
+8. Backend inserts enrollment row or reactivates a cancelled enrollment.
+9. Backend increments seats_taken atomically.
+10. Backend commits transaction.
+11. Backend writes an audit log entry for the enrollment action.
+12. Client refreshes My Courses state.
+
+4.4 Unenrollment Flow
+
+1. Student opens My Courses.
+2. Student clicks Remove on one enrolled course.
+3. Backend verifies JWT and ownership.
+4. Backend starts a transaction.
+5. Enrollment status changes from active to cancelled.
+6. seats_taken is decremented safely and never below zero.
+7. Backend commits transaction.
+8. API returns success response and updated enrollment state.
+
+4.5 Admin Course Creation and Publication Flow
+
+1. Admin creates a draft course with teacher, category, level, lessons, and description fields.
+2. Backend validates foreign keys for teacher_id and category_id.
+3. Draft course is stored with status = draft.
+4. Admin may update the draft multiple times.
+5. Admin publishes the course only when:
+- name is present
+- short_description is present
+- description is present
+- teacher_id is valid
+- category_id is valid
+- lessons > 0
+- capacity > 0
+6. Publishing sets published_at and makes the course visible to guests/students.
+7. Every create/update/publish action writes an audit log record.
+
+4.6 Teacher and Category Deletion Protection Flow
+
+1. Admin requests deletion of a teacher or category.
+2. Backend checks whether any non-archived course references the entity.
+3. If references exist, request returns 409 Conflict.
+4. If no references exist, record may be deleted or soft-archived.
+5. Audit log entry is recorded.
+
+5. Constraints and Business Rules
+
+5.1 Authentication and Account Rules
+- Email must be unique.
+- Password hash is always stored; plain-text passwords are never stored.
+- Allowed user roles in v1 are only student and admin.
+- JWT is required for every student or admin write action.
+- Students can only access their own enrollments.
+
+5.2 Course Rules
+- Every course must belong to exactly one category.
+- Every course must belong to exactly one teacher.
+- lessons must be greater than 0.
+- capacity must be greater than 0.
+- seats_taken must never exceed capacity.
+- Public users can see only published courses.
+- Draft and archived courses are hidden from guest/student catalog responses.
+- Course slug must be unique.
+
+5.3 Teacher Rules
+- full_name is required.
+- subject is required.
+- rating must stay in the range 1.0 to 5.0.
+- A teacher assigned to any non-archived course cannot be deleted.
+
+5.4 Category Rules
+- Category name must be unique.
+- Category slug must be unique.
+- A category assigned to any non-archived course cannot be deleted.
+
+5.5 Enrollment Rules
+- Only authenticated students can enroll.
+- Admins cannot enroll in courses.
+- A student cannot have more than one enrollment record per course.
+- Enrollment into an unpublished or archived course is forbidden.
+- Enrollment must be concurrency-safe to avoid oversubscription.
+- Unenrollment must release a seat in the same transaction as the status update.
+
+5.6 API Rules
+- All IDs are serialized as strings because database keys are BigInt.
+- All timestamps are stored in UTC in PostgreSQL.
+- All list endpoints use cursor-based pagination, not OFFSET pagination.
+- All mutating endpoints validate request bodies before Prisma is called.
+- All admin mutations append an audit log row.
+
+6. Custom Backend Complexity Requirements (BYOI Track)
+
+6.1 Concurrency-Safe Enrollment
+
+Requirement:
+The system must prevent oversubscription when many students enroll in the same course at the same time.
+
+Architecture choice:
+Use a single ACID transaction with a conditional seat update and a unique enrollment constraint. Redis may optionally be used for short-lived hot-course admission locks, but PostgreSQL remains the source of truth.
+
+6.2 Course Publication State Machine
+
+Requirement:
+Courses move through draft -> published -> archived states, and only published courses appear in public listings.
+
+Architecture choice:
+Represent state as a database enum. Publication logic is centralized in the service layer so validation, timestamps, and audit logs happen together.
+
+6.3 Search and Filtering at Scale
+
+Requirement:
+Catalog listing must support search, filters, sort order, and cursor pagination without degrading badly as the table grows.
+
+Architecture choice:
+Use composite indexes for status/category/teacher/created_at and trigram indexes for text search fields. Cursor pagination uses (created_at, id) to keep scans stable.
+
+6.4 Referential Integrity and Safe Archival
+
+Requirement:
+Deleting categories or teachers must not break existing courses or produce orphan references.
+
+Architecture choice:
+Use foreign keys with ON DELETE RESTRICT plus archive status on courses. Hard delete is permitted only when nothing references the record.
+
+6.5 Analytics Without Hurting OLTP Performance
+
+Requirement:
+Admin dashboards should show enrollment counts without running expensive aggregate queries on every page load.
+
+Architecture choice:
+Store daily aggregates in course_daily_stats and refresh them with a scheduled job. Operational writes stay in normalized tables; reporting reads use rollups.
+
+7. Out of Scope for Version 1
+
+- Paid checkout and billing
+- Teacher self-service accounts
+- Video hosting and streaming
+- Course progress tracking per lesson
+- Certificates and quizzes
+- Multi-language content management

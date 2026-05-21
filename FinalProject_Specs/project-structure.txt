@@ -1,0 +1,50 @@
+ACADEMY PORTAL
+project-structure.txt
+
+Exact target file tree for the final implementation:
+
+academy-portal/
+├── client/                                  # React frontend for guests, students, and admin pages
+│   ├── public/                              # Static assets served directly by Vite/build output
+│   ├── src/                                 # Client application source code
+│   │   ├── api/                             # Token-aware HTTP client wrappers for backend endpoints
+│   │   ├── app/                             # Router, providers, and top-level application wiring
+│   │   ├── components/                      # Reusable UI components shared across pages
+│   │   ├── pages/                           # Route-level screens such as Home, Courses, Admin, Login
+│   │   ├── store/                           # Redux slices, selectors, and async thunks
+│   │   └── styles/                          # Global CSS, tokens, and layout primitives
+│   ├── package.json                         # Client dependencies and development scripts
+│   └── vite.config.js                       # Vite build and development server configuration
+├── server/                                  # Express backend API and business logic
+│   ├── prisma/                              # Prisma source-of-truth schema and migration history
+│   │   ├── migrations/                      # Immutable Prisma Migrate SQL history
+│   │   ├── seeds/                           # Seed scripts for local/dev data bootstrapping
+│   │   └── schema.prisma                    # Database models, enums, relations, and indexes
+│   ├── src/                                 # Backend runtime source code
+│   │   ├── config/                          # Environment loading, validation, and app config
+│   │   ├── db/                              # Prisma client singleton and transaction helpers
+│   │   ├── jobs/                            # Scheduled rollup and cleanup jobs
+│   │   ├── middleware/                      # Auth, RBAC, rate limiting, validation, and error handling
+│   │   ├── modules/                         # Domain-oriented feature modules
+│   │   │   ├── auth/                        # Registration, login, JWT/session workflows
+│   │   │   ├── users/                       # Current-user profile and account endpoints
+│   │   │   ├── courses/                     # Catalog listing, detail, CRUD, publish/archive logic
+│   │   │   ├── categories/                  # Category CRUD and filter source endpoints
+│   │   │   ├── teachers/                    # Teacher profile CRUD and assignment protection
+│   │   │   ├── enrollments/                 # Student enrollment and unenrollment transactions
+│   │   │   ├── analytics/                   # Daily stats and admin reporting endpoints
+│   │   │   └── audit/                       # Audit log querying and append helpers
+│   │   ├── utils/                           # Cursor encoding, slugging, and shared helper functions
+│   │   ├── app.js                           # Express app composition without listen()
+│   │   └── server.js                        # HTTP server bootstrap and startup lifecycle
+│   ├── tests/                               # Automated tests for backend correctness
+│   │   ├── integration/                     # End-to-end API tests against a test database
+│   │   └── unit/                            # Fast isolated tests for services and helpers
+│   ├── .env.example                         # Safe template of all required environment variables
+│   ├── package.json                         # Server dependencies and scripts
+│   └── README.md                            # Setup, run, and operational notes for the backend
+├── docs/                                    # Technical documentation and submission artifacts
+│   └── FinalProject_Specs/                  # Final project blueprint deliverables for the course
+├── .gitignore                               # Ignore generated files, local env files, and secrets
+├── package.json                             # Root client scripts and top-level project metadata
+└── README.md                                # Repository overview and local development instructions

@@ -1,0 +1,379 @@
+ACADEMY PORTAL
+database-schema.txt
+
+1. Database Design Overview
+
+The Academy Portal backend uses PostgreSQL 15+ as the system of record and Prisma ORM as the only application-facing data access layer. The schema is normalized around users, teachers, categories, courses, enrollments, sessions, audit logs, and daily analytics rollups.
+
+Design goals:
+- keep catalog relationships explicit and queryable
+- protect enrollment integrity with foreign keys and unique constraints
+- support admin auditability
+- support fast public listing queries through composite indexes
+- keep reporting concerns separate from OLTP writes
+
+Important implementation rule:
+Application code uses Prisma Client only. Query examples in this document are described at the Prisma/query-plan level so the repository does not contain raw runtime SQL outside Prisma migrations.
+
+2. Entity Relationship Diagram (ASCII ERD)
+
++------------------+       +-------------------+
+|    app_users     |1     n|   auth_sessions   |
++------------------+-------+-------------------+
+| id PK            |       | id PK             |
+| email UQ         |       | user_id FK        |
+| password_hash    |       | jti UQ            |
+| role             |       | refresh_token_hash|
+| created_at       |       | expires_at        |
++------------------+       +-------------------+
+         |
+         |1
+         |                     +------------------+
+         +------------------n  |    audit_logs    |
+         |                     +------------------+
+         |                     | id PK            |
+         |                     | actor_user_id FK |
+         |                     | entity_type      |
+         |                     | entity_id        |
+         |                     | action           |
+         |                     | created_at       |
+         |                     +------------------+
+         |
+         |1
+         |                     +------------------+       +---------------------+
+         +------------------n  |   enrollments    |n     1|       courses        |
+                               +------------------+-------+---------------------+
+                               | id PK            |       | id PK               |
+                               | user_id FK       |       | teacher_id FK       |
+                               | course_id FK     |       | category_id FK      |
+                               | status           |       | slug UQ             |
+                               | enrolled_at      |       | status              |
+                               +------------------+       | capacity            |
+                                                          | seats_taken         |
+                                                          +---------------------+
+                                                                   |1
+                                                                   |
+                                                +------------------+------------------+
+                                                |                                     |
+                                                |n                                    |n
+                                      +------------------+                  +----------------------+
+                                      |     teachers     |                  |  course_categories   |
+                                      +------------------+                  +----------------------+
+                                      | id PK            |                  | id PK                |
+                                      | full_name        |                  | name UQ              |
+                                      | subject          |                  | slug UQ              |
+                                      | rating           |                  | is_active            |
+                                      +------------------+                  +----------------------+
+                                                                   |
+                                                                   |1
+                                                                   |n
+                                                          +----------------------+
+                                                          |  course_daily_stats  |
+                                                          +----------------------+
+                                                          | id PK                |
+                                                          | course_id FK         |
+                                                          | metric_date          |
+                                                          | active_enrollment... |
+                                                          +----------------------+
+
+Relationship summary:
+- User 1:N Enrollment
+- Course 1:N Enrollment
+- Teacher 1:N Course
+- CourseCategory 1:N Course
+- User 1:N AuthSession
+- User 1:N AuditLog
+- Course 1:N CourseDailyStat
+
+3. Prisma Schema (Source of Truth Blueprint)
+
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  student
+  admin
+}
+
+enum CourseLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum CourseStatus {
+  draft
+  published
+  archived
+}
+
+enum EnrollmentStatus {
+  active
+  cancelled
+}
+
+enum AuditAction {
+  create
+  update
+  delete
+  publish
+  archive
+  enroll
+  unenroll
+  login
+}
+
+enum AuditEntityType {
+  user
+  teacher
+  category
+  course
+  enrollment
+  session
+}
+
+model User {
+  id           BigInt        @id @default(autoincrement())
+  email        String        @unique @db.VarChar(255)
+  passwordHash String        @map("password_hash")
+  displayName  String?       @map("display_name") @db.VarChar(120)
+  role         Role          @default(student)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  lastLoginAt  DateTime?     @map("last_login_at") @db.Timestamptz
+  enrollments  Enrollment[]
+  sessions     AuthSession[]
+  auditLogs    AuditLog[]    @relation("audit_actor")
+
+  @@map("app_users")
+  @@index([role, createdAt])
+}
+
+model Teacher {
+  id        BigInt   @id @default(autoincrement())
+  fullName  String   @map("full_name") @db.VarChar(150)
+  subject   String   @db.VarChar(120)
+  rating    Decimal  @default(5.0) @db.Decimal(2, 1)
+  bio       String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  courses   Course[]
+
+  @@map("teachers")
+  @@index([isActive, createdAt])
+  @@index([subject, isActive])
+}
+
+model CourseCategory {
+  id          BigInt   @id @default(autoincrement())
+  slug        String   @unique @db.VarChar(120)
+  name        String   @unique @db.VarChar(100)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  courses     Course[]
+
+  @@map("course_categories")
+  @@index([isActive, name])
+}
+
+model Course {
+  id               BigInt         @id @default(autoincrement())
+  slug             String         @unique @db.VarChar(160)
+  name             String         @db.VarChar(150)
+  shortDescription String         @map("short_description") @db.VarChar(255)
+  description      String
+  categoryId       BigInt         @map("category_id")
+  teacherId        BigInt         @map("teacher_id")
+  lessons          Int
+  level            CourseLevel
+  status           CourseStatus   @default(draft)
+  capacity         Int            @default(100)
+  seatsTaken       Int            @default(0) @map("seats_taken")
+  publishedAt      DateTime?      @map("published_at") @db.Timestamptz
+  archivedAt       DateTime?      @map("archived_at") @db.Timestamptz
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  teacher          Teacher        @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  courseCategory   CourseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  enrollments      Enrollment[]
+  dailyStats       CourseDailyStat[]
+
+  @@map("courses")
+  @@index([status, createdAt, id])
+  @@index([categoryId, status, createdAt, id])
+  @@index([teacherId, status, createdAt, id])
+  @@index([level, status, createdAt, id])
+}
+
+model Enrollment {
+  id          BigInt           @id @default(autoincrement())
+  userId      BigInt           @map("user_id")
+  courseId    BigInt           @map("course_id")
+  status      EnrollmentStatus @default(active)
+  enrolledAt  DateTime         @default(now()) @map("enrolled_at") @db.Timestamptz
+  cancelledAt DateTime?        @map("cancelled_at") @db.Timestamptz
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("enrollments")
+  @@unique([userId, courseId], map: "enrollments_user_course_key")
+  @@index([userId, status, enrolledAt])
+  @@index([courseId, status, enrolledAt])
+}
+
+model AuthSession {
+  id               BigInt   @id @default(autoincrement())
+  userId           BigInt   @map("user_id")
+  jti              String   @unique @db.VarChar(120)
+  refreshTokenHash String   @map("refresh_token_hash")
+  ipAddress        String?  @map("ip_address") @db.VarChar(64)
+  userAgent        String?  @map("user_agent") @db.VarChar(255)
+  expiresAt        DateTime @map("expires_at") @db.Timestamptz
+  revokedAt        DateTime? @map("revoked_at") @db.Timestamptz
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_sessions")
+  @@index([userId, expiresAt])
+  @@index([expiresAt, revokedAt])
+}
+
+model AuditLog {
+  id          BigInt          @id @default(autoincrement())
+  actorUserId BigInt?         @map("actor_user_id")
+  entityType  AuditEntityType @map("entity_type")
+  entityId    BigInt          @map("entity_id")
+  action      AuditAction
+  beforeJson  Json?           @map("before_json")
+  afterJson   Json?           @map("after_json")
+  requestId   String?         @map("request_id") @db.VarChar(120)
+  ipAddress   String?         @map("ip_address") @db.VarChar(64)
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  actor       User?           @relation("audit_actor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+  @@index([entityType, entityId, createdAt])
+  @@index([actorUserId, createdAt])
+}
+
+model CourseDailyStat {
+  id                    BigInt   @id @default(autoincrement())
+  courseId              BigInt   @map("course_id")
+  metricDate            DateTime @map("metric_date") @db.Date
+  activeEnrollmentCount Int      @default(0) @map("active_enrollment_count")
+  newEnrollmentCount    Int      @default(0) @map("new_enrollment_count")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz
+  course                Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("course_daily_stats")
+  @@unique([courseId, metricDate], map: "course_daily_stats_unique")
+ @@index([metricDate])
+}
+```
+
+Note:
+Because the current project uses Prisma 7 with prisma.config.ts and the PrismaPg adapter, the connection URL is configured outside schema.prisma. The schema file remains the model source of truth, while connection details live in configuration.
+
+4. Additional Database Constraints
+
+Some constraints are best enforced with SQL migrations because Prisma schema syntax does not directly express every CHECK constraint needed.
+
+Recommended database-level checks:
+- teachers.rating >= 1.0 AND teachers.rating <= 5.0
+- courses.lessons > 0
+- courses.capacity > 0
+- courses.seats_taken >= 0
+- courses.seats_taken <= courses.capacity
+- enrollments.status = cancelled implies cancelled_at IS NOT NULL
+
+Recommended uniqueness and consistency rules:
+- app_users.email unique
+- course_categories.name unique
+- course_categories.slug unique
+- courses.slug unique
+- auth_sessions.jti unique
+- enrollments unique on (user_id, course_id)
+
+5. Migration Strategy
+
+Tooling:
+- Local development: prisma migrate dev
+- CI/CD and production: prisma migrate deploy
+
+Safe migration workflow:
+1. Make additive schema changes first.
+2. Deploy nullable columns or new tables without breaking old code.
+3. Backfill data with a migration or controlled script.
+4. Switch application logic to new fields.
+5. Remove deprecated columns only in a later migration.
+
+Examples:
+- category enum to course_categories table migration
+- adding course slug as nullable, backfilling values, then making it unique/not null
+- adding capacity and seats_taken before enabling seat-safe enrollment logic
+
+Production safety rules:
+- Never edit an already-applied migration.
+- Prefer expand/contract over destructive one-step changes.
+- Run migrations before rolling new application code that depends on them.
+- Take a database backup before destructive changes.
+
+6. The Nasty Query
+
+Chosen slow query:
+Public course catalog listing with search, filters, cursor pagination, and enrollment counts.
+
+Reason it is the nastiest:
+- joins three core tables
+- optionally aggregates enrollments
+- mixes text search with structured filters
+- runs frequently on the hottest public endpoint
+
+Representative Prisma shape:
+
+- `course.findMany`
+- `where` combines publication status, optional category/teacher/level filters, text search, and cursor conditions
+- `include` loads teacher, category, and active enrollment count
+- `orderBy` uses a deterministic created_at/id pair
+- `take` requests one extra row to determine whether another page exists
+
+Indexing strategy:
+- composite index for status plus created_at/id
+- composite index for category plus status plus created_at/id
+- composite index for teacher plus status plus created_at/id
+- composite index for level plus status plus created_at/id
+- composite index for enrollment course/status lookup
+- optional text-search indexes for course name, short description, teacher name, and category name if the catalog grows
+
+Expected EXPLAIN ANALYZE behavior:
+- index scan or bitmap index scan on courses depending on filters
+- nested loop or hash join into small dimension tables
+- filtered left join on enrollments via course_id/status index
+- stable keyset pagination using (created_at, id)
+- no deep OFFSET skip cost
+
+Why cursor pagination is required here:
+- OFFSET becomes slower as page number grows
+- public catalog pages need stable ordering even during inserts
+- (created_at, id) provides deterministic continuation tokens
+
+7. Transaction Notes for Critical Writes
+
+Enrollment transaction must do all of the following atomically:
+- verify course status
+- verify seat availability
+- prevent duplicate active enrollment
+- insert or reactivate enrollment
+- update seats_taken
+- append audit log
+
+If any step fails, the transaction is rolled back so partial seat updates never remain in the database.

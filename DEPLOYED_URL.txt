@@ -1,0 +1,8 @@
+REPLACE_WITH_PUBLIC_DEPLOYED_FRONTEND_URL
+
+Local verified frontend: http://localhost:8081
+Local verified API: http://localhost:3001
+Local verified Swagger: http://localhost:3001/docs
+
+Before final submission, replace the first line with the public DeployRocks,
+Render, Vercel, or other cloud URL.

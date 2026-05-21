@@ -1,0 +1,216 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  student
+  admin
+}
+
+enum CourseLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum CourseStatus {
+  draft
+  published
+  archived
+}
+
+enum EnrollmentStatus {
+  active
+  cancelled
+}
+
+enum AuditAction {
+  create
+  update
+  delete
+  publish
+  archive
+  enroll
+  unenroll
+  login
+  verify_email
+  request_password_reset
+  reset_password
+}
+
+enum AuditEntityType {
+  user
+  teacher
+  category
+  course
+  enrollment
+  session
+}
+
+enum AccountTokenPurpose {
+  email_verification
+  password_reset
+}
+
+model User {
+  id              BigInt         @id @default(autoincrement())
+  email           String         @unique @db.VarChar(255)
+  passwordHash    String         @map("password_hash")
+  displayName     String?        @map("display_name") @db.VarChar(120)
+  role            Role           @default(student)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  lastLoginAt     DateTime?      @map("last_login_at") @db.Timestamptz
+  emailVerifiedAt DateTime?      @map("email_verified_at") @db.Timestamptz
+  enrollments     Enrollment[]
+  sessions        AuthSession[]
+  accountTokens   AccountToken[]
+  auditLogs       AuditLog[]     @relation("audit_actor")
+
+  @@map("app_users")
+  @@index([role, createdAt])
+  @@index([emailVerifiedAt])
+}
+
+model AccountToken {
+  id        BigInt              @id @default(autoincrement())
+  userId    BigInt              @map("user_id")
+  purpose   AccountTokenPurpose
+  tokenHash String              @unique @map("token_hash")
+  expiresAt DateTime            @map("expires_at") @db.Timestamptz
+  usedAt    DateTime?           @map("used_at") @db.Timestamptz
+  createdAt DateTime            @default(now()) @map("created_at") @db.Timestamptz
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account_tokens")
+  @@index([userId, purpose, expiresAt])
+  @@index([purpose, expiresAt, usedAt])
+}
+
+model Teacher {
+  id        BigInt   @id @default(autoincrement())
+  fullName  String   @map("full_name") @db.VarChar(150)
+  subject   String   @db.VarChar(120)
+  rating    Decimal  @default(5.0) @db.Decimal(2, 1)
+  bio       String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  courses   Course[]
+
+  @@map("teachers")
+  @@index([isActive, createdAt])
+  @@index([subject, isActive])
+}
+
+model CourseCategory {
+  id          BigInt   @id @default(autoincrement())
+  slug        String   @unique @db.VarChar(120)
+  name        String   @unique @db.VarChar(100)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  courses     Course[]
+
+  @@map("course_categories")
+  @@index([isActive, name])
+}
+
+model Course {
+  id               BigInt         @id @default(autoincrement())
+  slug             String         @unique @db.VarChar(160)
+  name             String         @db.VarChar(150)
+  shortDescription String         @map("short_description") @db.VarChar(255)
+  description      String
+  categoryId       BigInt         @map("category_id")
+  teacherId        BigInt         @map("teacher_id")
+  lessons          Int
+  level            CourseLevel
+  status           CourseStatus   @default(draft)
+  capacity         Int            @default(100)
+  seatsTaken       Int            @default(0) @map("seats_taken")
+  publishedAt      DateTime?      @map("published_at") @db.Timestamptz
+  archivedAt       DateTime?      @map("archived_at") @db.Timestamptz
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  teacher          Teacher        @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  courseCategory   CourseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  enrollments      Enrollment[]
+  dailyStats       CourseDailyStat[]
+
+  @@map("courses")
+  @@index([status, createdAt, id])
+  @@index([categoryId, status, createdAt, id])
+  @@index([teacherId, status, createdAt, id])
+  @@index([level, status, createdAt, id])
+}
+
+model Enrollment {
+  id          BigInt           @id @default(autoincrement())
+  userId      BigInt           @map("user_id")
+  courseId    BigInt           @map("course_id")
+  status      EnrollmentStatus @default(active)
+  enrolledAt  DateTime         @default(now()) @map("enrolled_at") @db.Timestamptz
+  cancelledAt DateTime?        @map("cancelled_at") @db.Timestamptz
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("enrollments")
+  @@unique([userId, courseId], map: "enrollments_user_course_key")
+  @@index([userId, status, enrolledAt])
+  @@index([courseId, status, enrolledAt])
+}
+
+model AuthSession {
+  id               BigInt    @id @default(autoincrement())
+  userId           BigInt    @map("user_id")
+  jti              String    @unique @db.VarChar(120)
+  refreshTokenHash String    @map("refresh_token_hash")
+  ipAddress        String?   @map("ip_address") @db.VarChar(64)
+  userAgent        String?   @map("user_agent") @db.VarChar(255)
+  expiresAt        DateTime  @map("expires_at") @db.Timestamptz
+  revokedAt        DateTime? @map("revoked_at") @db.Timestamptz
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_sessions")
+  @@index([userId, expiresAt])
+  @@index([expiresAt, revokedAt])
+}
+
+model AuditLog {
+  id          BigInt          @id @default(autoincrement())
+  actorUserId BigInt?         @map("actor_user_id")
+  entityType  AuditEntityType @map("entity_type")
+  entityId    BigInt          @map("entity_id")
+  action      AuditAction
+  beforeJson  Json?           @map("before_json")
+  afterJson   Json?           @map("after_json")
+  requestId   String?         @map("request_id") @db.VarChar(120)
+  ipAddress   String?         @map("ip_address") @db.VarChar(64)
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  actor       User?           @relation("audit_actor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+  @@index([entityType, entityId, createdAt])
+  @@index([actorUserId, createdAt])
+}
+
+model CourseDailyStat {
+  id                    BigInt   @id @default(autoincrement())
+  courseId              BigInt   @map("course_id")
+  metricDate            DateTime @map("metric_date") @db.Date
+  activeEnrollmentCount Int      @default(0) @map("active_enrollment_count")
+  newEnrollmentCount    Int      @default(0) @map("new_enrollment_count")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz
+  course                Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("course_daily_stats")
+  @@unique([courseId, metricDate], map: "course_daily_stats_unique")
+  @@index([metricDate])
+}
