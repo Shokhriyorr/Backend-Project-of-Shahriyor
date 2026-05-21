@@ -6,7 +6,7 @@
 2. Sign in at [dashboard.deployrocks.com](https://dashboard.deployrocks.com) and connect the repository.
 3. Choose **Docker Compose** deployment and set the compose file to **`compose.deployrocks.yaml`** (not `docker-compose.yml`).
 4. If a deploy failed before, read **`docs/deployment/deployrocks-fix.md`**.
-4. Set environment variables in the platform dashboard (do not commit secrets):
+5. Set environment variables in the platform dashboard (do not commit secrets):
 
 | Variable | Example |
 |----------|---------|
@@ -15,8 +15,8 @@
 | `JWT_SECRET_KEY` | 32+ random chars |
 | `JWT_REFRESH_SECRET_KEY` | different 32+ random chars |
 | `POSTGRES_PASSWORD` | strong password |
-| `DATABASE_URL` | `postgresql://postgres:<password>@db:5432/academy_db` |
-| `REDIS_URL` | `redis://redis:6379` |
+| `DATABASE_URL` | Platform-injected, or `postgresql://postgres:<password>@db:5432/academy_db` |
+| `REDIS_URL` | Platform-injected, or `redis://redis:6379` |
 | `EMAIL_PROVIDER` | `smtp` |
 | `EMAIL_FROM_ADDRESS` | verified sender |
 | `SMTP_PASS` or `EMAIL_API_KEY` | provider secret |
@@ -24,9 +24,9 @@
 | `CORS_ORIGINS` | `https://<your-frontend-domain>` |
 | `ADMIN_NOTIFICATION_EMAILS` | your inbox for course-published alerts |
 
-5. Deploy and wait until `api`, `worker`, `frontend`, `db`, and `redis` are healthy.
-6. Copy the public frontend URL into `DEPLOYED_URL.txt` (first line only).
-7. Record the defense video against the deployed URL and update `VIDEO_LINK.txt`.
+6. Deploy and wait until `api` and `frontend` are live, with platform Postgres/Redis healthy. Workers run inside `api` on DeployRocks.
+7. Copy the public frontend URL into `DEPLOYED_URL.txt` (first line only).
+8. Record the defense video against the deployed URL and update `VIDEO_LINK.txt`.
 
 ## Render fallback
 

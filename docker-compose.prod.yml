@@ -23,6 +23,8 @@ services:
       START_WORKERS_IN_API: 'false'
       ENABLE_DAILY_STATS_JOB: 'true'
   frontend:
+    environment:
+      API_PORT: 3000
     depends_on:
       api:
         condition: service_healthy

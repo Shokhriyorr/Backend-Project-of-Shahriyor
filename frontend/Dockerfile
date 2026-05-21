@@ -14,7 +14,9 @@ RUN npm run build
 
 FROM nginx:1.27-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# API_PORT is substituted at container start (3000 local, 5000 on DeployRocks).
+ENV API_PORT=5000
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80

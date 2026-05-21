@@ -1,7 +1,7 @@
 # DeployRocks / Kazi.rocks compose file.
 # In the dashboard, set "Compose file" to: compose.deployrocks.yaml
 #
-# Do NOT use docker-compose.yml on DeployRocks — it includes db/redis/worker
+# Do NOT use docker-compose.yml on DeployRocks - it includes db/redis/worker
 # services that the platform provisions separately and a worker with no web port.
 
 services:
@@ -14,11 +14,11 @@ services:
       ENVIRONMENT: production
       PORT: 5000
       BACKEND_PORT: 5000
-      # DATABASE_URL and REDIS_URL are injected by DeployRocks — do not override.
+      # DATABASE_URL and REDIS_URL are injected by DeployRocks - do not override.
       START_WORKERS_IN_API: 'true'
       ENABLE_BACKGROUND_WORKERS: 'true'
       ENABLE_DAILY_STATS_JOB: 'true'
-      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+      EMAIL_PROVIDER: smtp
       EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS}
       SMTP_HOST: ${SMTP_HOST:-smtp.sendgrid.net}
       SMTP_PORT: ${SMTP_PORT:-587}
@@ -67,5 +67,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE: /api
+    environment:
+      API_PORT: 5000
     ports:
       - '80:80'

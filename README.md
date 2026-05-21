@@ -41,7 +41,7 @@ Full-stack final defense project: Express + Prisma backend, React demo frontend,
 
 ```bash
 cp .env.example .env
-docker compose -f docker-compose.local.yml up --build
+docker compose up --build
 ```
 
 Default local URLs from `.env.example`:
@@ -152,7 +152,7 @@ See `docs/deployment/deployrocks.md` for the full DeployRocks/Render checklist.
 
 1. Push the full repository to GitHub.
 2. Create a DeployRocks or Render project from the repository.
-3. Deploy with Docker Compose using `docker-compose.yml`; use `docker-compose.prod.yml` as the production overlay if the platform supports multiple Compose files.
+3. On DeployRocks, set the compose file to `compose.deployrocks.yaml` (platform-managed Postgres/Redis). For Render or local production smoke tests, use `docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build`.
 4. Configure production environment variables in the platform dashboard:
    - `ENVIRONMENT=production`
    - `NODE_ENV=production`

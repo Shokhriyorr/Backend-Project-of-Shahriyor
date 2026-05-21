@@ -26,3 +26,14 @@ import { jest } from '@jest/globals'
 afterEach(() => {
   jest.restoreAllMocks()
 })
+
+afterAll(async () => {
+  await Promise.allSettled([
+    import('../apps/api/src/shared/database/prisma.js').then(({ disconnectPrisma }) =>
+      disconnectPrisma(),
+    ),
+    import('../apps/api/src/shared/queues/redis.js').then(({ closeRedisConnection }) =>
+      closeRedisConnection(),
+    ),
+  ])
+})

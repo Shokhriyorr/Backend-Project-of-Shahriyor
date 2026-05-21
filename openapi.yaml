@@ -2,22 +2,33 @@ openapi: 3.0.3
 info:
   title: Academy Portal API
   version: 1.0.0
+  license:
+    name: ISC
+    url: https://opensource.org/license/isc-license-txt
   description: >
     Technical contract for the Academy Portal backend. The API supports public
     course discovery, student enrollments, and admin management of courses,
     teachers, and categories.
 servers:
-  - url: http://localhost:3000
-    description: Local development server
+  - url: /
+    description: Same-origin frontend/API gateway
 tags:
   - name: System
+    description: Health, readiness, and documentation endpoints.
   - name: Auth
+    description: Registration, login, verification, refresh, logout, and password reset.
   - name: Users
+    description: Authenticated profile and account management.
   - name: Courses
+    description: Course catalog discovery and admin course lifecycle management.
   - name: Categories
+    description: Admin-managed course categories.
   - name: Teachers
+    description: Admin-managed teacher profiles.
   - name: Enrollments
+    description: Student enrollment and cancellation workflows.
   - name: Admin
+    description: Operational queues, audit logs, and maintenance visibility.
 paths:
   /health:
     get:
@@ -39,6 +50,8 @@ paths:
                   ok:
                     type: boolean
                     example: true
+        '404':
+          $ref: '#/components/responses/NotFound'
   /health/ready:
     get:
       tags:
@@ -82,6 +95,8 @@ paths:
                     ok: true
                     skipped: true
                     reason: background_workers_disabled
+        '404':
+          $ref: '#/components/responses/NotFound'
   /openapi.yaml:
     get:
       tags:
@@ -96,6 +111,8 @@ paths:
             application/yaml:
               schema:
                 type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
   /docs:
     get:
       tags:
@@ -110,6 +127,8 @@ paths:
             text/html:
               schema:
                 type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
   /api/auth/register:
     post:
       tags:
@@ -1793,8 +1812,9 @@ components:
         data:
           $ref: '#/components/schemas/UserSummary'
         email_job:
+          type: object
           nullable: true
-          oneOf:
+          allOf:
             - $ref: '#/components/schemas/EmailJobSummary'
     UserProfileUpdateRequest:
       type: object
@@ -2235,6 +2255,7 @@ components:
           format: date-time
           example: '2026-05-13T10:30:00Z'
         actor:
+          type: object
           nullable: true
           allOf:
             - $ref: '#/components/schemas/UserSummary'

@@ -1,6 +1,6 @@
 Academy Portal - Final Submission Checklist
 
-[ ] docker compose up boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
+[x] docker compose up --build boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
 [x] docker-compose.yml orchestrates backend + worker + frontend + PostgreSQL 15 + Redis
 [x] apps/api and frontend contain the backend and frontend source code
 [x] openapi.yaml contains the OpenAPI contract
@@ -26,12 +26,12 @@ Academy Portal - Final Submission Checklist
 [x] DeployRocks/Render guide present in docs/deployment/deployrocks.md
 
 [ ] Application is LIVE on dashboard.deployrocks.com or Render (see DEPLOY-NOW.txt)
-[x] DEPLOYED_URL.txt contains the public frontend URL candidate
+[ ] DEPLOYED_URL.txt contains the final public frontend URL
 [x] compose.deployrocks.yaml + deployrocks.env.example ready for platform
 [ ] VIDEO_LINK.txt contains the defense recording URL
 [ ] Production secrets configured (JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, EMAIL_API_KEY/SMTP_PASS, CORS_ORIGINS)
 [ ] Real SMTP inbox demonstrated on deployed environment (EMAIL_PROVIDER=smtp)
-[ ] openapi.yaml validated in editor.swagger.io
+[x] openapi.yaml validated with Redocly CLI
 [ ] Postman tabs prepared for defense
 [ ] I am the sole author of the architectural decisions in this code
 
@@ -39,7 +39,9 @@ Local full stack from .env.example:
   cp .env.example .env
   docker compose up --build
   Frontend: http://localhost:8080
-  Swagger:  http://localhost:3000/docs
+  Swagger:  http://localhost:8080/docs
 
-Production overlay:
+DeployRocks compose file: compose.deployrocks.yaml (see DEPLOY-NOW.txt)
+
+Local production overlay (SMTP):
   docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build

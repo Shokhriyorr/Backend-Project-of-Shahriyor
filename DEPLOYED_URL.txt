@@ -1,7 +1,11 @@
-https://zero-reliance-shoot-barrier.trycloudflare.com
+https://REPLACE-WITH-YOUR-LIVE-FRONTEND-URL
 
-Local smoke URLs (verified 2026-05-22):
+# Replace the first line with your stable DeployRocks / Render frontend URL after deploy.
+# Example: https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
+
+Local smoke (after: docker compose up --build):
 - Frontend: http://localhost:8080
-- API/Swagger: http://localhost:3000/docs
+- Swagger:  http://localhost:8080/docs
+- Health:   http://localhost:8080/health
 
-Deploy steps: docs/deployment/deployrocks.md
+Deploy steps: DEPLOY-NOW.txt

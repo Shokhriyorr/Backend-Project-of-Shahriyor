@@ -1,26 +1,34 @@
-Academy Portal — DeployRocks за 5 минут
+Academy Portal - DeployRocks (5 minutes)
 =======================================
 
-1) Открой https://dashboard.deployrocks.com → свой проект → Settings
+1) Open https://dashboard.deployrocks.com -> your project -> Settings
 
-2) Compose file: docker-compose.yml (по умолчанию, уже в GitHub)
-   Старый worker больше не деплоится.
+2) Compose file (IMPORTANT - not docker-compose.yml):
 
-3) Environment → вставь переменные из файла:
-   deployrocks.env.example
-   (SMTP_PASS и JWT замени на свои; сгенерировать JWT:
-    powershell -File scripts/generate-deploy-secrets.ps1)
+   compose.deployrocks.yaml
 
-4) Удали failed app "worker" если есть в списке apps
+3) Environment -> paste from deployrocks.env.example
+   Replace SMTP_PASS, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY.
+   Generate JWT:
+     powershell -ExecutionPolicy Bypass -File scripts/generate-deploy-secrets.ps1
 
-5) Retry deploy → жди api + frontend = Live
+   Set PUBLIC_APP_URL and CORS_ORIGINS to your live domain, e.g.:
+     https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 
-6) Проверь в браузере:
-   https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health
-   https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/docs
+   Do NOT override DATABASE_URL / REDIS_URL unless the dashboard shows them empty.
 
-7) DEPLOYED_URL.txt — первая строка = твой URL → git push
+4) Remove failed separate "worker" app if it exists (workers run inside api).
 
-8) Запиши видео защиты → VIDEO_LINK.txt → git push
+5) Retry deploy -> wait until api + frontend = Live
 
-Подробно: docs/deployment/deployrocks-fix.md
+6) Smoke test (same host as frontend):
+
+   https://YOUR-DOMAIN.kazi.rocks/health
+   https://YOUR-DOMAIN.kazi.rocks/docs
+   https://YOUR-DOMAIN.kazi.rocks/api/courses
+
+7) Put the frontend URL (first line only) in DEPLOYED_URL.txt -> git push
+
+8) Record defense video -> VIDEO_LINK.txt -> git push
+
+Details: docs/deployment/deployrocks-fix.md

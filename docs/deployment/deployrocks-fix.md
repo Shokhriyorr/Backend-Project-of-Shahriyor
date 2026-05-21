@@ -1,18 +1,18 @@
-# DeployRocks failed deploy — fix guide
+# DeployRocks failed deploy - fix guide
 
 ## Why it failed
 
 | Error | Cause |
-|-------|--------|
+|-------|-------|
 | `worker` build failed / no web listeners | Worker is not a website; DeployRocks expects a web port per app |
 | `Network ... does not exist` | Services deployed before the shared network was ready (retry helps) |
-| `PASSWORD_RESET_TTL_MINUTES` random value | Platform auto-generated secrets for **numeric** env vars — you must set them manually |
+| `PASSWORD_RESET_TTL_MINUTES` random value | Platform auto-generated secrets for **numeric** env vars - you must set them manually |
 
 ## Fix (10 minutes)
 
 ### 1. Change compose file in DeployRocks
 
-Project settings → **Compose file**:
+Project settings -> **Compose file**:
 
 ```text
 compose.deployrocks.yaml
@@ -55,11 +55,11 @@ PUBLIC_APP_URL=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 CORS_ORIGINS=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 ```
 
-Do **not** set `DATABASE_URL` or `REDIS_URL` yourself unless the dashboard shows them empty — DeployRocks injects them.
+Do **not** set `DATABASE_URL` or `REDIS_URL` yourself unless the dashboard shows them empty - DeployRocks injects them.
 
 ### 4. Redeploy
 
-Click **Retry deploy**. Order should be: api → frontend (both green).
+Click **Retry deploy**. Order should be: api -> frontend (both green).
 
 ### 5. Smoke test
 
@@ -74,15 +74,11 @@ Register a student and confirm email arrives.
 
 Open **Logs** for `...-api` and check for:
 
-- `Environment validation failed` → fix JWT length (32+ chars) and CORS_ORIGINS
-- `Prisma` / database → wait for postgres plugin to be green, redeploy api
+- `Environment validation failed` -> fix JWT length (32+ chars) and CORS_ORIGINS
+- `Prisma` / database -> wait for postgres plugin to be green, redeploy api
 
-## Local Docker unchanged
+## Local Docker
 
-Keep using:
-
-```powershell
-docker compose up --build
-```
+Full stack (rubric): `docker compose up --build` using root `docker-compose.yml`.
 
 `compose.deployrocks.yaml` is **only** for the cloud platform.
