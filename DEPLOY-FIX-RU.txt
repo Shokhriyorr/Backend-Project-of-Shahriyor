@@ -20,7 +20,11 @@ Academy Portal. Нужен повторный деплой из ЭТОГО ре�
 
 1. https://dashboard.deployrocks.com
 2. Проект → Settings
-3. Поле "Compose file" — ОСТАВЬТЕ ПУСТЫМ (не указывайте compose-файл)
+3. Поле "Compose file" — выберите ОДНО из двух:
+     compose.deployrocks.yaml   (один контейнер web)
+   ИЛИ оставьте ПУСТЫМ (только корневой Dockerfile)
+   НЕ используйте docker-compose.yml на DeployRocks — платформа
+   создаст 6 отдельных apps (api, worker, frontend, db...) и упадёт.
 4. Деплой идёт из корневого Dockerfile (frontend + API + worker в одном контейнере)
 
 Подробно: docs/deployment/deployrocks-fix.md
