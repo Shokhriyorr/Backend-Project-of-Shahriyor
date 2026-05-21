@@ -149,7 +149,9 @@ services:
       api:
         condition: service_healthy
     environment:
+      API_HOST: api
       API_PORT: 3000
+      PORT: 80
     ports:
       - '${FRONTEND_PORT:-8080}:80'
 

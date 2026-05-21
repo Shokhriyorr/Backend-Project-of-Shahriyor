@@ -14,8 +14,11 @@ RUN npm run build
 
 FROM nginx:1.27-alpine
 
-# API_PORT is substituted at container start (3000 local, 5000 on DeployRocks).
+# Dokku/DeployRocks inject PORT at runtime; nginx must listen on that port.
+ENV PORT=80
+ENV API_HOST=api
 ENV API_PORT=5000
+
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
