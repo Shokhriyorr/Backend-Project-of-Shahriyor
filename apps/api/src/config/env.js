@@ -17,11 +17,11 @@ const NUMERIC_ENV_DEFAULTS = {
   SMTP_PORT: '587',
 }
 
-function sanitizeNumericEnvVars() {
+function sanitizeNumericEnvVars(target) {
   for (const [key, fallback] of Object.entries(NUMERIC_ENV_DEFAULTS)) {
-    const value = process.env[key]
+    const value = target[key]
     if (value !== undefined && !/^\d+$/.test(String(value).trim())) {
-      process.env[key] = fallback
+      target[key] = fallback
       console.warn(
         `[env] ${key} must be numeric; DeployRocks auto-secret ignored, using ${fallback}.`,
       )
@@ -29,7 +29,7 @@ function sanitizeNumericEnvVars() {
   }
 }
 
-sanitizeNumericEnvVars()
+sanitizeNumericEnvVars(process.env)
 
 const envSchema = v.object({
   NODE_ENV: v.optional(v.picklist(['development', 'test', 'production']), 'development'),
@@ -92,7 +92,9 @@ const envSchema = v.object({
   ADMIN_NOTIFICATION_EMAILS: v.optional(v.string(), ''),
 })
 
-const parsedEnv = v.safeParse(envSchema, process.env)
+const envInput = { ...process.env }
+sanitizeNumericEnvVars(envInput)
+const parsedEnv = v.safeParse(envSchema, envInput)
 
 if (!parsedEnv.success) {
   const issues = parsedEnv.issues.map((issue) => `- ${issue.message}`).join('\n')
