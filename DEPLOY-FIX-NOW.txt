@@ -12,5 +12,30 @@ NOW:
 If the same REDIS_URL error appears, DeployRocks is using an older commit.
 Push a fresh commit to main and retry deploy again.
 
+CURRENT BLOCKER:
+The app container now starts successfully:
+  - migrations OK
+  - seed OK
+  - web health check OK
+  - Server running on http://localhost:5000
+
+DeployRocks still marks deploy failed because the shared Dokku host has broken
+nginx configs for another app:
+  kgrsajid-aidos-batlabai-shopbuilder-backend
+  kgrsajid-aidos-batlabai-shopbuilder-worker
+
+Error in logs:
+  host not found in upstream "invalid:3000"
+
+This is a platform/server nginx issue, not an app code issue. Ask DeployRocks
+support/admin to clean invalid nginx configs on the host, e.g.:
+  sudo dokku nginx:validate-config --clean
+  sudo dokku proxy:build-config shokhriyorr-backend-project-of-shahriyor
+  sudo systemctl reload nginx
+
+After they clean it, retry deploy. Expected:
+  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health
+  -> {"ok":true}
+
 SECURITY: Your GitHub token appeared in deploy logs. Revoke it:
   GitHub -> Settings -> Developer settings -> Personal access tokens -> revoke old token.

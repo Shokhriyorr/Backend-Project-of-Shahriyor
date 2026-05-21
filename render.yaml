@@ -5,7 +5,7 @@ services:
   - type: web
     name: academy-api
     runtime: docker
-    dockerfilePath: apps/api/Dockerfile
+    dockerfilePath: apps/api/Dockerfile.compose
     dockerContext: .
     plan: free
     healthCheckPath: /health
@@ -33,7 +33,7 @@ services:
   - type: web
     name: academy-frontend
     runtime: docker
-    dockerfilePath: frontend/Dockerfile
+    dockerfilePath: frontend/Dockerfile.compose
     dockerContext: frontend
     plan: free
 

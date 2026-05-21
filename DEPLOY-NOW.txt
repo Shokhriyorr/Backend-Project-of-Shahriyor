@@ -27,6 +27,14 @@ Academy Portal - DeployRocks (5 minutes)
 
 5) Retry deploy -> wait until the main app = Live
 
+   If container health checks pass but deploy fails during nginx reload with:
+     host not found in upstream "invalid:3000"
+   this is a broken shared Dokku nginx config on DeployRocks, not this repo.
+   Send the log to DeployRocks support/admin and ask them to run:
+     sudo dokku nginx:validate-config --clean
+     sudo dokku proxy:build-config shokhriyorr-backend-project-of-shahriyor
+     sudo systemctl reload nginx
+
 6) Smoke test (same host as frontend):
 
    https://YOUR-DOMAIN.kazi.rocks/health

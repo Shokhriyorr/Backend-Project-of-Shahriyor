@@ -33,7 +33,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
+      dockerfile: apps/api/Dockerfile.compose
     restart: unless-stopped
     depends_on:
       db:
@@ -100,7 +100,7 @@ services:
   worker:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
+      dockerfile: apps/api/Dockerfile.compose
     restart: unless-stopped
     depends_on:
       api:
@@ -142,6 +142,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile.compose
       args:
         VITE_API_BASE: /api
     restart: unless-stopped
