@@ -11,6 +11,7 @@ FinalProject_Specs/
 .env.*
 !.env.example
 deployrocks.env.local
+DEPLOYROCKS-ENV-COPY.txt
 
 .DS_Store
 .vscode/
