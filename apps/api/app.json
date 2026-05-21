@@ -1,0 +1,12 @@
+{
+  "healthchecks": {
+    "web": [
+      {
+        "type": "startup",
+        "name": "api health check",
+        "path": "/health",
+        "attempts": 8
+      }
+    ]
+  }
+}

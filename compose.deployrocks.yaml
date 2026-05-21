@@ -1,0 +1,72 @@
+# DeployRocks / Kazi.rocks compose file.
+# In the dashboard, set "Compose file" to: compose.deployrocks.yaml
+#
+# Do NOT use docker-compose.yml on DeployRocks — it includes db/redis/worker
+# services that the platform provisions separately and a worker with no web port.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      NODE_ENV: production
+      ENVIRONMENT: production
+      PORT: 5000
+      BACKEND_PORT: 5000
+      # DATABASE_URL and REDIS_URL are injected by DeployRocks — do not override.
+      START_WORKERS_IN_API: 'true'
+      ENABLE_BACKGROUND_WORKERS: 'true'
+      ENABLE_DAILY_STATS_JOB: 'true'
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+      EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS}
+      SMTP_HOST: ${SMTP_HOST:-smtp.sendgrid.net}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-apikey}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_REFRESH_SECRET_KEY: ${JWT_REFRESH_SECRET_KEY}
+      JWT_ACCESS_TTL_SECONDS: ${JWT_ACCESS_TTL_SECONDS:-900}
+      JWT_REFRESH_TTL_DAYS: ${JWT_REFRESH_TTL_DAYS:-30}
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      EMAIL_VERIFICATION_TTL_MINUTES: '1440'
+      PASSWORD_RESET_TTL_MINUTES: '30'
+      EMAIL_QUEUE_NAME: ${EMAIL_QUEUE_NAME:-academy-email}
+      MAINTENANCE_QUEUE_NAME: ${MAINTENANCE_QUEUE_NAME:-academy-maintenance}
+      STATS_JOB_REPEAT_MS: ${STATS_JOB_REPEAT_MS:-900000}
+      ADMIN_NOTIFICATION_EMAILS: ${ADMIN_NOTIFICATION_EMAILS:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@academy.dev}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-AdminPass123!}
+      ADMIN_NAME: ${ADMIN_NAME:-Academy Admin}
+    expose:
+      - '5000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '--input-type=module',
+          '-e',
+          "const r=await fetch('http://127.0.0.1:5000/health');process.exit(r.ok?0:1)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+    command: >
+      sh -c "npm run prisma:deploy &&
+             npm run seed:admin &&
+             npm run seed:demo &&
+             node src/index.js"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api
+    depends_on:
+      api:
+        condition: service_healthy
