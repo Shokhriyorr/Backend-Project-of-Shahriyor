@@ -1,4 +1,7 @@
+# Replace with your unlisted defense video URL (YouTube or Google Drive).
 https://REPLACE-WITH-YOUR-DEFENSE-VIDEO
 
-Upload an unlisted YouTube/Google Drive video that follows docs/defense-script.md.
-The recording must show the deployed public URL (not only localhost).
+Requirements:
+- Follow docs/defense-script.md
+- Show the deployed public URL from DEPLOYED_URL.txt
+- Demonstrate real SMTP email delivery from production

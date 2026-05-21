@@ -32,7 +32,7 @@ describe('environment validation', () => {
       JWT_SECRET_KEY: 'replace-with-a-long-random-string-at-least-32-characters',
     })
 
-    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+    await expect(import('../../apps/api/src/config/env.js')).rejects.toThrow(
       'JWT access secret must be a real production secret',
     )
   })
@@ -42,7 +42,7 @@ describe('environment validation', () => {
       JWT_REFRESH_SECRET_KEY: 'production-secret-with-enough-entropy-123456',
     })
 
-    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+    await expect(import('../../apps/api/src/config/env.js')).rejects.toThrow(
       'JWT_REFRESH_SECRET_KEY must be different',
     )
   })
@@ -52,7 +52,7 @@ describe('environment validation', () => {
       CORS_ORIGINS: '*',
     })
 
-    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+    await expect(import('../../apps/api/src/config/env.js')).rejects.toThrow(
       'CORS_ORIGINS cannot contain * in production',
     )
   })
@@ -64,7 +64,7 @@ describe('environment validation', () => {
       ENABLE_BACKGROUND_WORKERS: 'false',
     })
 
-    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+    await expect(import('../../apps/api/src/config/env.js')).rejects.toThrow(
       'EMAIL_PROVIDER must be smtp in production',
     )
   })
@@ -72,7 +72,7 @@ describe('environment validation', () => {
   test('accepts explicit production configuration', async () => {
     setProductionEnv()
 
-    const { env } = await import('../../server/src/config/env.js')
+    const { env } = await import('../../apps/api/src/config/env.js')
 
     expect(env.NODE_ENV).toBe('production')
     expect(env.CORS_ORIGINS).toEqual(['https://academy.example.com'])

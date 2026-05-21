@@ -17,7 +17,7 @@ describe('auth route integration', () => {
   async function buildAuthApp() {
     const findUnique = jest.fn()
 
-    jest.unstable_mockModule('../../server/src/prisma.js', () => ({
+    jest.unstable_mockModule('../../apps/api/src/shared/database/prisma.js', () => ({
       Prisma: {},
       default: {
         user: {
@@ -27,12 +27,17 @@ describe('auth route integration', () => {
       },
     }))
 
-    jest.unstable_mockModule('../../server/src/queues/emailQueue.js', () => ({
-      enqueueEmail: jest.fn(),
-    }))
+    jest.unstable_mockModule(
+      '../../apps/api/src/modules/notifications/queues/email.queue.js',
+      () => ({
+        enqueueEmail: jest.fn(),
+      }),
+    )
 
-    const { default: authRouter } = await import('../../server/src/routes/auth.js')
-    const { errorHandler, requestIdMiddleware } = await import('../../server/src/utils/api.js')
+    const { default: authRouter } =
+      await import('../../apps/api/src/modules/auth/routes/auth.routes.js')
+    const { errorHandler, requestIdMiddleware } =
+      await import('../../apps/api/src/shared/http/api.js')
     const app = express()
 
     app.use(requestIdMiddleware)

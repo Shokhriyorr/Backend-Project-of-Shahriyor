@@ -1,17 +1,17 @@
 Academy Portal - Final Submission Checklist
 
-[x] docker compose up boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
+[ ] docker compose up boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
 [x] docker-compose.yml orchestrates backend + worker + frontend + PostgreSQL 15 + Redis
-[x] server/ and frontend/ directories present with source code
-[x] openapi.yaml in repository root
-[x] migrations/ Prisma history available
-[x] tests/ Jest suites available
+[x] apps/api and frontend contain the backend and frontend source code
+[x] openapi.yaml contains the OpenAPI contract
+[x] migrations/ contains the Prisma migration history
+[x] tests/ contains the Jest suites
 [x] README.md includes setup, architecture, testing, and deployment instructions
 [x] .env.example documents all required variables
 [x] CHECKLIST.txt present
 [x] CHANGELOG.md present
 [x] docs/defense-script.md present for oral defense
-[x] Postman collection present in postman/
+[x] Postman collection present in docs/api/postman/
 [x] Auth lifecycle implemented (register, verify, login, refresh, logout, reset)
 [x] RBAC enforced (student/admin)
 [x] Redis rate limiting on auth endpoints
@@ -20,6 +20,10 @@ Academy Portal - Final Submission Checklist
 [x] BYOI complexity requirements tagged in code
 [x] No raw SQL in application source
 [x] npm run verify passes locally
+[x] Enrollment atomicity covered in unit/integration tests
+[x] Business email enqueue covered in integration tests
+[x] Production compose overlay documented in docker-compose.prod.yml
+[x] DeployRocks/Render guide present in docs/deployment/deployrocks.md
 
 [ ] Application is LIVE on dashboard.deployrocks.com or Render
 [ ] DEPLOYED_URL.txt contains the public frontend URL

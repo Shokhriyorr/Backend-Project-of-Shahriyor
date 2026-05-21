@@ -1,4 +1,4 @@
-import { slugify } from '../../server/src/utils/slug.js'
+import { slugify } from '../../apps/api/src/shared/utils/slug.js'
 
 describe('slugify', () => {
   test('normalizes names into lowercase url-safe slugs', () => {

@@ -34,7 +34,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: server
+        working-directory: apps/api
 
     env:
       NODE_ENV: test
@@ -53,7 +53,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: server/package-lock.json
+          cache-dependency-path: apps/api/package-lock.json
       - run: npm ci
       - run: npm run prisma:generate
       - run: npm run prisma:deploy
@@ -61,9 +61,9 @@ jobs:
       - run: npm test
       - name: Docker build
         working-directory: .
-        run: docker build -f server/Dockerfile -t academy-portal-api .
+        run: docker build -f apps/api/Dockerfile -t academy-portal-api .
 
-  frontend:
+  web:
     runs-on: ubuntu-latest
     defaults:
       run:

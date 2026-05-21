@@ -30,7 +30,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: server/Dockerfile
+      dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     depends_on:
       db:
@@ -97,7 +97,7 @@ services:
   worker:
     build:
       context: .
-      dockerfile: server/Dockerfile
+      dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     depends_on:
       api:

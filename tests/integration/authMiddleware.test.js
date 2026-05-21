@@ -9,8 +9,10 @@ describe('auth middleware integration', () => {
   })
 
   async function buildProtectedApp() {
-    const { requireAuth, requireRole } = await import('../../server/src/middleware/auth.js')
-    const { errorHandler, requestIdMiddleware } = await import('../../server/src/utils/api.js')
+    const { requireAuth, requireRole } =
+      await import('../../apps/api/src/shared/middleware/auth.js')
+    const { errorHandler, requestIdMiddleware } =
+      await import('../../apps/api/src/shared/http/api.js')
     const app = express()
 
     app.use(requestIdMiddleware)

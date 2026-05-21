@@ -3,7 +3,7 @@ $root = Split-Path -Parent $PSScriptRoot
 
 Write-Host "== Academy Portal submission verification =="
 
-Push-Location (Join-Path $root 'server')
+Push-Location (Join-Path $root 'apps/api')
 npm test
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 npm run lint

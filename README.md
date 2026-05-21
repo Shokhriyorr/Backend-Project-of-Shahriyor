@@ -6,18 +6,35 @@ Full-stack final defense project: Express + Prisma backend, React demo frontend,
 
 ```text
 .
-|-- server/                 Express API, Prisma schema, workers, routes, services
-|-- frontend/               React + Vite demo UI served by nginx
+|-- apps/
+|   |-- api/                Express API application
+|   |   |-- src/
+|   |   |   |-- app/        Express app composition and HTTP wiring
+|   |   |   |-- config/     Runtime environment validation
+|   |   |   |-- modules/    Backend feature modules
+|   |   |   `-- shared/     Cross-cutting database, HTTP, middleware, queues, utils
+|   |   `-- scripts/       API maintenance and seed scripts
+|-- frontend/                React + Vite UI served by nginx
+|   `-- src/
+|       |-- app/            App shell, routing, store, startup hooks, global styles
+|       |-- entities/       Reusable domain UI such as course and teacher cards
+|       |-- features/       Frontend feature modules with pages/model/api
+|       `-- shared/         Shared HTTP client, layout, UI, assets/hooks/types/utils
+|-- database/
+|   `-- prisma/             Prisma schema
 |-- migrations/             Canonical Prisma migrate history
-|-- tests/                  Canonical Jest unit/integration suites
-|-- docs/                   Blueprint notes and defense script
-|-- postman/                Defense Postman collection/environment
+|-- tests/                  Backend unit and integration tests
+|-- docs/
+|   |-- api/postman/        Postman collection/environment
+|   `-- blueprint/          Original blueprint notes
+|-- openapi.yaml            Complete API contract
+|-- CHECKLIST.txt           Final submission checklist
+|-- DEPLOYED_URL.txt        Public deployed frontend URL
+|-- VIDEO_LINK.txt          Defense video link
+|-- scripts/                Root verification/automation scripts
 |-- docker-compose.yml      API + worker + frontend + PostgreSQL + Redis
-|-- openapi.yaml            API contract
 |-- .env.example            Local and production environment template
-|-- CHECKLIST.txt           Self-verification checklist
-|-- DEPLOYED_URL.txt        Public deployment URL placeholder
-`-- VIDEO_LINK.txt          Defense video URL placeholder
+`-- package.json            Root orchestration scripts
 ```
 
 ## Quick start with Docker
@@ -44,7 +61,9 @@ Seeded admin:
 
 - Backend framework: Express.js, matching the Week 1 JavaScript/Node choice.
 - ORM: Prisma only. Application source is scanned by `npm run lint` for raw SQL-like access.
-- Migrations/tests: kept once at the repository root to satisfy submission requirements and avoid duplicate histories.
+- API source is feature-based: `apps/api/src/modules/*` owns its `routes`, `services`, `queues`, `workers`, or `jobs`; shared HTTP/middleware/database helpers live in `apps/api/src/shared`.
+- Frontend source follows `app/features/entities/shared`; each feature owns its pages, Redux model, and API adapter, while the shared layer keeps only reusable infrastructure and UI.
+- Prisma schema lives in `database/prisma`; migration history is root-level `migrations/` to match the final submission rubric.
 - Database: PostgreSQL 15 with Prisma migrations and ACID transactions for enrollment seat changes.
 - Cache/queue: Redis powers BullMQ email and maintenance queues plus Redis-backed auth rate limiting.
 - Frontend: React + Vite consumes the live API through `/api`; nginx proxies API/docs/openapi traffic to the backend container.
@@ -77,8 +96,8 @@ Implemented queued emails:
 Backend:
 
 ```bash
-cd server
-cp .env.example .env
+cd apps/api
+cp ../../.env.example ../../.env
 npm install
 npm run prisma:deploy
 npm run prisma:generate
@@ -90,7 +109,7 @@ npm run dev
 Worker:
 
 ```bash
-cd server
+cd apps/api
 ENABLE_BACKGROUND_WORKERS=true npm run worker
 ```
 
@@ -120,7 +139,7 @@ npm run format:check
 Backend-only checks:
 
 ```bash
-cd server
+cd apps/api
 npm test
 npm run lint
 npm run predefense:check
@@ -128,6 +147,8 @@ npm run predefense:strict
 ```
 
 ## Deployment
+
+See `docs/deployment/deployrocks.md` for the full DeployRocks/Render checklist.
 
 1. Push the full repository to GitHub.
 2. Create a DeployRocks or Render project from the repository.
@@ -153,5 +174,5 @@ npm run predefense:strict
 2. Register a student, verify through the real email, log in, and log out.
 3. Demonstrate browsing courses, enrolling, cancelling enrollment, and admin course publishing.
 4. Show queued/completed jobs at `/api/admin/jobs/email` and `/api/admin/jobs/maintenance`.
-5. Open Swagger UI at `/docs` and the Postman collection in `postman/`.
+5. Open Swagger UI at `/docs` and the Postman collection in `docs/api/postman/`.
 6. Use `docs/defense-script.md` as the live demo script.

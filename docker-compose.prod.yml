@@ -1,5 +1,9 @@
 # Production overlay for DeployRocks / Render.
 # Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+#
+# Required dashboard secrets (never commit real values):
+# JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, POSTGRES_PASSWORD,
+# SMTP_PASS or EMAIL_API_KEY, PUBLIC_APP_URL, CORS_ORIGINS
 
 services:
   api:
@@ -9,6 +13,7 @@ services:
       EMAIL_PROVIDER: smtp
       ENABLE_BACKGROUND_WORKERS: 'true'
       START_WORKERS_IN_API: 'false'
+      ENABLE_DAILY_STATS_JOB: 'true'
   worker:
     environment:
       NODE_ENV: production
@@ -16,3 +21,8 @@ services:
       EMAIL_PROVIDER: smtp
       ENABLE_BACKGROUND_WORKERS: 'true'
       START_WORKERS_IN_API: 'false'
+      ENABLE_DAILY_STATS_JOB: 'true'
+  frontend:
+    depends_on:
+      api:
+        condition: service_healthy

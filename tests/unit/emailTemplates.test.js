@@ -6,7 +6,7 @@ import {
   buildPasswordResetEmail,
   buildPasswordChangedEmail,
   buildVerificationEmail,
-} from '../../server/src/services/emailTemplates.js'
+} from '../../apps/api/src/modules/notifications/templates/email-templates.js'
 
 describe('email templates', () => {
   const user = {

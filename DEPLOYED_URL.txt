@@ -1,8 +1,9 @@
+# Replace the line below with your public frontend URL after DeployRocks/Render deploy.
+# Example: https://academy-portal.deployrocks.app
 REPLACE_WITH_PUBLIC_DEPLOYED_FRONTEND_URL
 
-Local verified frontend: http://localhost:8081
-Local verified API: http://localhost:3001
-Local verified Swagger: http://localhost:3001/docs
+Local smoke URLs (verified 2026-05-22):
+- Frontend: http://localhost:8080
+- API/Swagger: http://localhost:3000/docs
 
-Before final submission, replace the first line with the public DeployRocks,
-Render, Vercel, or other cloud URL.
+Deploy steps: docs/deployment/deployrocks.md

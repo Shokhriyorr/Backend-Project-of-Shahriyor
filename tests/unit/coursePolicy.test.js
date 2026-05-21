@@ -1,9 +1,9 @@
 import { describe, expect, it } from '@jest/globals'
-import { ApiError } from '../../server/src/utils/api.js'
+import { ApiError } from '../../apps/api/src/shared/http/api.js'
 import {
   resolveCourseAuditAction,
   validatePublicationPayload,
-} from '../../server/src/services/coursePolicy.js'
+} from '../../apps/api/src/modules/catalog/services/course-policy.service.js'
 
 describe('course publication policy', () => {
   it('requires core fields before publishing', () => {

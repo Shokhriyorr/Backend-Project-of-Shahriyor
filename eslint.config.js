@@ -17,7 +17,7 @@ export default [
   },
   js.configs.recommended,
   {
-    files: ['frontend/**/*.{js,jsx}', 'server/**/*.js', 'tests/**/*.js'],
+    files: ['frontend/**/*.{js,jsx}', 'apps/api/**/*.js', 'tests/**/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

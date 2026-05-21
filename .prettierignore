@@ -10,7 +10,11 @@ FinalProject_Specs
 
 *.log
 package-lock.json
-server/package-lock.json
+apps/api/package-lock.json
 frontend/package-lock.json
 openapi.yaml
-server/openapi.yaml
+CHECKLIST.txt
+DEPLOYED_URL.txt
+VIDEO_LINK.txt
+**/Dockerfile
+*.ps1
