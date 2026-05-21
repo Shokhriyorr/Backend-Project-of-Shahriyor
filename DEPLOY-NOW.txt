@@ -3,8 +3,8 @@ Academy Portal — DeployRocks за 5 минут
 
 1) Открой https://dashboard.deployrocks.com → свой проект → Settings
 
-2) Compose file (ОБЯЗАТЕЛЬНО):
-   compose.deployrocks.yaml
+2) Compose file: docker-compose.yml (по умолчанию, уже в GitHub)
+   Старый worker больше не деплоится.
 
 3) Environment → вставь переменные из файла:
    deployrocks.env.example

@@ -16,7 +16,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Pop-Location
 
 Push-Location $root
-docker compose config
+docker compose -f docker-compose.local.yml config
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Pop-Location
 

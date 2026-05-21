@@ -41,7 +41,7 @@ Full-stack final defense project: Express + Prisma backend, React demo frontend,
 
 ```bash
 cp .env.example .env
-docker compose up --build
+docker compose -f docker-compose.local.yml up --build
 ```
 
 Default local URLs from `.env.example`:
