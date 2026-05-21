@@ -1,9 +1,12 @@
 $ErrorActionPreference = 'Stop'
 
-function New-RandomSecret([int]$length = 40) {
-  -join ((65..90) + (97..122) + (48..57) | Get-Random -Count $length | ForEach-Object { [char]$_ })
+function New-RandomSecret {
+  param([int]$Length = 40)
+  -join ((65..90) + (97..122) + (48..57) | Get-Random -Count $Length | ForEach-Object { [char]$_ })
 }
 
-Write-Host "JWT_SECRET_KEY=$([New-RandomSecret])"
-Write-Host "JWT_REFRESH_SECRET_KEY=$([New-RandomSecret])"
-Write-Host "POSTGRES_PASSWORD=$([New-RandomSecret])"
+$access = New-RandomSecret
+$refresh = New-RandomSecret
+
+Write-Output "JWT_SECRET_KEY=$access"
+Write-Output "JWT_REFRESH_SECRET_KEY=$refresh"

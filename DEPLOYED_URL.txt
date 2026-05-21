@@ -1,11 +1,1 @@
-https://REPLACE-WITH-YOUR-LIVE-FRONTEND-URL
-
-# Replace the first line with your stable DeployRocks / Render frontend URL after deploy.
-# Example: https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
-
-Local smoke (after: docker compose up --build):
-- Frontend: http://localhost:8080
-- Swagger:  http://localhost:8080/docs
-- Health:   http://localhost:8080/health
-
-Deploy steps: DEPLOY-NOW.txt
+https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
