@@ -1,5 +1,5 @@
-# Production overlay for DeployRocks / Render.
-# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+# Production overlay for local/Render full-stack smoke tests.
+# Usage: docker compose -f docker-compose.local.yml -f docker-compose.prod.yml up --build
 #
 # Required dashboard secrets (never commit real values):
 # JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, POSTGRES_PASSWORD,

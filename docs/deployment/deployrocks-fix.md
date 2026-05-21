@@ -4,8 +4,9 @@
 
 | Error | Cause |
 |-------|-------|
-| `worker` build failed / no web listeners | Worker is not a website; DeployRocks expects a web port per app |
-| `Network ... does not exist` | Services deployed before the shared network was ready (retry helps) |
+| `worker` build failed / no web listeners | DeployRocks read a compose file with the local-only worker service |
+| `No web listeners specified` | The platform needs explicit `ports` entries for web apps |
+| `Network ... does not exist` | Dokku tried to attach apps to a shared network before it was declared/created |
 | `PASSWORD_RESET_TTL_MINUTES` random value | Platform auto-generated secrets for **numeric** env vars - you must set them manually |
 
 ## Fix (10 minutes)
@@ -18,9 +19,9 @@ Project settings -> **Compose file**:
 compose.deployrocks.yaml
 ```
 
-Not `docker-compose.yml`.
+`docker-compose.yml` is also safe now, but setting the explicit file keeps the dashboard clear.
 
-This file deploys only **api + frontend**. Workers run inside **api** (`START_WORKERS_IN_API=true`). Postgres and Redis are created by the platform.
+Both deploy compose files deploy only **api + frontend** with explicit web ports and the Dokku network name. Workers run inside **api** (`START_WORKERS_IN_API=true`). Postgres and Redis are created by the platform.
 
 ### 2. Delete failed worker app (if it exists)
 
@@ -44,6 +45,8 @@ JWT_REFRESH_TTL_DAYS=30
 START_WORKERS_IN_API=true
 ENABLE_BACKGROUND_WORKERS=true
 EMAIL_PROVIDER=smtp
+DEPLOYROCKS_PROJECT_NAME=shokhriyorr-backend-project-of-shahriyor
+DEPLOYROCKS_API_HOST=shokhriyorr-backend-project-of-shahriyor-api.web
 ```
 
 Use your real SMTP, JWT, and URLs. **Delete** wrong auto-generated entries for `PASSWORD_RESET_TTL_MINUTES` if they look like random secrets.
@@ -79,6 +82,6 @@ Open **Logs** for `...-api` and check for:
 
 ## Local Docker
 
-Full stack (rubric): `docker compose up --build` using root `docker-compose.yml`.
+Full stack (rubric): `docker compose -f docker-compose.local.yml up --build`.
 
-`compose.deployrocks.yaml` is **only** for the cloud platform.
+`compose.deployrocks.yaml` and root `docker-compose.yml` are **only** for the cloud platform shape.

@@ -3,9 +3,11 @@ Academy Portal - DeployRocks (5 minutes)
 
 1) Open https://dashboard.deployrocks.com -> your project -> Settings
 
-2) Compose file (IMPORTANT - not docker-compose.yml):
+2) Compose file:
 
    compose.deployrocks.yaml
+
+   docker-compose.yml is also DeployRocks-safe now if the dashboard falls back to it.
 
 3) Environment -> paste from deployrocks.env.example
    Replace SMTP_PASS, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY.

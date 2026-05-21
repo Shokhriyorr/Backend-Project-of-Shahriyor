@@ -4,7 +4,7 @@
 
 1. Push the latest `main` branch to GitHub.
 2. Sign in at [dashboard.deployrocks.com](https://dashboard.deployrocks.com) and connect the repository.
-3. Choose **Docker Compose** deployment and set the compose file to **`compose.deployrocks.yaml`** (not `docker-compose.yml`).
+3. Choose **Docker Compose** deployment and set the compose file to **`compose.deployrocks.yaml`**. The root `docker-compose.yml` has the same DeployRocks-safe api + frontend shape in case the dashboard falls back to the default file.
 4. If a deploy failed before, read **`docs/deployment/deployrocks-fix.md`**.
 5. Set environment variables in the platform dashboard (do not commit secrets):
 
@@ -12,6 +12,8 @@
 |----------|---------|
 | `ENVIRONMENT` | `production` |
 | `NODE_ENV` | `production` |
+| `DEPLOYROCKS_PROJECT_NAME` | `shokhriyorr-backend-project-of-shahriyor` |
+| `DEPLOYROCKS_API_HOST` | `shokhriyorr-backend-project-of-shahriyor-api.web` |
 | `JWT_SECRET_KEY` | 32+ random chars |
 | `JWT_REFRESH_SECRET_KEY` | different 32+ random chars |
 | `POSTGRES_PASSWORD` | strong password |
@@ -33,7 +35,7 @@
 Render can run the same Compose stack with a **Docker Compose** blueprint:
 
 1. Create a new **Blueprint** from the repo.
-2. Use `docker-compose.yml` plus `docker-compose.prod.yml`.
+2. Use `docker-compose.local.yml` plus `docker-compose.prod.yml`.
 3. Configure the same environment variables in the Render dashboard.
 4. Expose the `frontend` service publicly and keep `db`/`redis` internal.
 

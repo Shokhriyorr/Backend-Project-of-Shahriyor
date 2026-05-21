@@ -5,9 +5,9 @@
   "type": "module",
   "description": "Academy Portal full-stack final project",
   "scripts": {
-    "compose:up": "docker compose up --build",
-    "compose:down": "docker compose down",
-    "compose:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build",
+    "compose:up": "docker compose -f docker-compose.local.yml up --build",
+    "compose:down": "docker compose -f docker-compose.local.yml down",
+    "compose:prod": "docker compose -f docker-compose.local.yml -f docker-compose.prod.yml up --build",
     "verify": "powershell -ExecutionPolicy Bypass -File scripts/verify-submission.ps1",
     "lint": "npm run api:lint && npm run web:lint",
     "api:dev": "npm --prefix apps/api run dev",
