@@ -20,9 +20,3 @@ process.env.SMTP_SECURE = process.env.SMTP_SECURE ?? 'false'
 process.env.ENABLE_BACKGROUND_WORKERS = process.env.ENABLE_BACKGROUND_WORKERS ?? 'false'
 process.env.START_WORKERS_IN_API = process.env.START_WORKERS_IN_API ?? 'true'
 process.env.REDIS_URL = process.env.REDIS_URL ?? 'redis://127.0.0.1:6379'
-
-import { jest } from '@jest/globals'
-
-afterEach(() => {
-  jest.restoreAllMocks()
-})

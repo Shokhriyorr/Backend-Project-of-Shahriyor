@@ -4,10 +4,12 @@ import { defineConfig, env } from 'prisma/config'
 loadEnv({ path: '../../.env' })
 loadEnv()
 
+const dockerBuild = process.env.DOCKER_BUILD === 'true'
+
 export default defineConfig({
-  schema: '../../database/prisma/schema.prisma',
+  schema: dockerBuild ? './prisma/schema.prisma' : '../../database/prisma/schema.prisma',
   migrations: {
-    path: '../../migrations',
+    path: dockerBuild ? '../../migrations' : '../../migrations',
   },
   datasource: {
     url: env('DATABASE_URL'),
