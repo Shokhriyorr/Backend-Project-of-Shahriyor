@@ -1,3 +1,3 @@
-# Backward-compatible alias. Canonical rubric file: docker-compose.yml
+# Backward-compatible alias for the full local stack.
 include:
-  - docker-compose.yml
+  - docker-compose.full.yml

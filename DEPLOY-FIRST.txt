@@ -3,22 +3,28 @@ DeployRocks: "Deploy the app first before setting environment variables"
 
 This is NORMAL. The dashboard unlocks Environment only AFTER the first deploy.
 
+CRITICAL — Compose file on DeployRocks:
+  Set to:  compose.deployrocks.yaml
+  NOT:     docker-compose.yml  (creates 6 broken apps: api, worker, frontend...)
+
 ORDER (do exactly this):
 
 STEP 1 — Deploy WITHOUT Environment tab
   - Do NOT open Environment yet (it will show that message).
-  - Click the purple button:  Retry deploy
-  - Wait until status is Live (or Failed — then Retry deploy once more).
+  - Click:  Deploy now / Retry deploy
+  - Wait until status is Live (or Failed — read Logs, fix compose file, retry).
 
 STEP 2 — THEN set Environment
-  - After deploy attempt, open tab Environment.
+  - After first deploy attempt, open tab Environment.
   - Paste everything from:  deployrocks.env.local
-  - Replace SMTP_PASS and EMAIL_FROM_ADDRESS with your real Gmail.
   - Fix PASSWORD_RESET_TTL_MINUTES = 30  (only digits).
 
 STEP 3 — Deploy again
-  - Click Retry deploy again so new variables apply.
+  - Click Retry deploy so new variables apply.
 
-Check:
-  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health
-  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/docs
+Check (after DeployRocks Live + domain assigned):
+  https://YOUR-DOMAIN/health
+  https://YOUR-DOMAIN/docs
+
+TEMPORARY public URL (local Docker + Cloudflare tunnel):
+  See DEPLOYED_URL.txt — keep cloudflared running during defense.

@@ -1,0 +1,6 @@
+# DeployRocks project hint (read by platform if supported).
+# Compose file: compose.deployrocks.yaml
+# Do not use docker-compose.yml on DeployRocks (multi-app Dokku failure).
+
+COMPOSE_FILE=compose.deployrocks.yaml
+DOCKERFILE=Dockerfile
