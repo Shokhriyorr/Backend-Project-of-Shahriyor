@@ -126,8 +126,27 @@ const smtpUser = rawEnv.SMTP_USER || (rawEnv.EMAIL_API_KEY ? 'apikey' : '')
 const port = Number(rawEnv.BACKEND_PORT ?? rawEnv.PORT ?? 3000)
 const emailProvider = rawEnv.EMAIL_PROVIDER
 const smtpHost = rawEnv.SMTP_HOST.trim()
-const redisUrl = rawEnv.REDIS_URL.trim()
 const enableWorkers = rawEnv.ENABLE_BACKGROUND_WORKERS === 'true'
+
+function resolveRedisUrl(raw) {
+  const trimmed = (raw || '').trim()
+  if (trimmed) {
+    return trimmed
+  }
+
+  const project = process.env.DEPLOYROCKS_PROJECT_NAME?.trim()
+  if (project) {
+    const host = `dokku-redis-${project}-redis`
+    console.warn(
+      `[env] REDIS_URL missing; using redis://${host}:6379 — add Redis in DeployRocks Databases if workers fail.`,
+    )
+    return `redis://${host}:6379`
+  }
+
+  return ''
+}
+
+const redisUrl = resolveRedisUrl(rawEnv.REDIS_URL)
 
 if (jwtSecret.length < 32) {
   throw new Error(

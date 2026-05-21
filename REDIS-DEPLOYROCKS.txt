@@ -1,0 +1,11 @@
+ERROR: REDIS_URL is required when ENABLE_BACKGROUND_WORKERS=true
+
+FIX IN DEPLOYROCKS (2 minutes):
+
+1. Left menu -> Databases
+2. Click "Add Redis" / "New Redis" for project shahriyor
+   Name should be like: shokhriyorr-backend-project-of-shahriyor-redis
+3. Link Redis to your app (REDIS_URL must appear in Environment)
+4. Retry deploy
+
+If REDIS_URL appears in Environment after linking, deploy should pass.
