@@ -50,7 +50,9 @@ function checkTcp({ host, port: targetPort, label, timeoutMs = 3000 }) {
     socket.setTimeout(timeoutMs)
     socket.once('connect', () => finish(true, `${label} is reachable at ${host}:${targetPort}.`))
     socket.once('timeout', () => finish(false, `${label} timed out at ${host}:${targetPort}.`))
-    socket.once('error', (error) => finish(false, `${label} is not reachable at ${host}:${targetPort}: ${error.message}`))
+    socket.once('error', (error) =>
+      finish(false, `${label} is not reachable at ${host}:${targetPort}: ${error.message}`),
+    )
     socket.connect(targetPort, host)
   })
 }
@@ -95,7 +97,12 @@ function checkEnv() {
 
   if (!jwtSecret || jwtSecret.length < 32) {
     fail('JWT_SECRET_KEY (or JWT_SECRET) must be at least 32 characters.')
-  } else if (jwtSecret.includes('replace-with') || jwtSecret.includes('test-secret') || jwtSecret.includes('docker-local-demo') || jwtSecret.includes('local-')) {
+  } else if (
+    jwtSecret.includes('replace-with') ||
+    jwtSecret.includes('test-secret') ||
+    jwtSecret.includes('docker-local-demo') ||
+    jwtSecret.includes('local-')
+  ) {
     fail('JWT access secret still looks like a placeholder.')
   } else {
     pass('JWT access secret looks non-placeholder.')
@@ -103,7 +110,12 @@ function checkEnv() {
 
   if (!jwtRefreshSecret || jwtRefreshSecret.length < 32) {
     fail('JWT_REFRESH_SECRET_KEY must be at least 32 characters.')
-  } else if (jwtRefreshSecret.includes('replace-with') || jwtRefreshSecret.includes('test-secret') || jwtRefreshSecret.includes('docker-local-demo') || jwtRefreshSecret.includes('local-')) {
+  } else if (
+    jwtRefreshSecret.includes('replace-with') ||
+    jwtRefreshSecret.includes('test-secret') ||
+    jwtRefreshSecret.includes('docker-local-demo') ||
+    jwtRefreshSecret.includes('local-')
+  ) {
     fail('JWT refresh secret still looks like a placeholder.')
   } else if (jwtRefreshSecret === jwtSecret) {
     fail('JWT_REFRESH_SECRET_KEY must be different from JWT_SECRET_KEY for defense/production.')
@@ -163,7 +175,10 @@ function checkEnv() {
 
 async function checkTcpDependencies() {
   if (process.env.DATABASE_URL) {
-    const databaseUrl = parseConnectionString(process.env.DATABASE_URL.replace(/^"|"$/g, ''), 'DATABASE_URL')
+    const databaseUrl = parseConnectionString(
+      process.env.DATABASE_URL.replace(/^"|"$/g, ''),
+      'DATABASE_URL',
+    )
     if (databaseUrl) {
       const result = await checkTcp({
         host: databaseUrl.hostname,
@@ -189,15 +204,27 @@ async function checkTcpDependencies() {
 
 async function checkApi() {
   await checkHttp('/health', 'Health endpoint', (body) => body?.ok === true)
-  const readiness = await checkHttp('/health/ready', 'Readiness endpoint', (body) => body?.ok === true)
+  const readiness = await checkHttp(
+    '/health/ready',
+    'Readiness endpoint',
+    (body) => body?.ok === true,
+  )
 
   if (readiness?.checks?.redis?.skipped) {
     const message = 'Readiness skipped Redis because background workers are disabled.'
     strict ? fail(message) : warn(message)
   }
 
-  await checkHttp('/docs', 'Swagger UI', (body) => typeof body === 'string' && body.includes('Swagger UI'))
-  await checkHttp('/api/courses', 'Public courses endpoint', (body) => Array.isArray(body?.data) && body?.meta)
+  await checkHttp(
+    '/docs',
+    'Swagger UI',
+    (body) => typeof body === 'string' && body.includes('Swagger UI'),
+  )
+  await checkHttp(
+    '/api/courses',
+    'Public courses endpoint',
+    (body) => Array.isArray(body?.data) && body?.meta,
+  )
 }
 
 function printReport() {

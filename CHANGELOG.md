@@ -2,6 +2,10 @@
 
 ## 2026-05-21 - Final defense packaging
 
+- Replaced Windows junction-based duplicate layout with real `server/`, `frontend/`, `tests/`, and `migrations/` directories.
+- Removed legacy `FRONT-4`, nested `SERVER_STABLE`, duplicate backend OpenAPI/tests/migrations, stale nested CI, and corrupted step-by-step notes.
+- Added root ESLint/Prettier/editor configuration, frontend alias metadata, and Docker context hygiene through `.dockerignore`.
+- Made root `tests/` and `migrations/` the canonical locations used by Jest and Prisma.
 - Added a dedicated `worker` service to Docker Compose for BullMQ email and maintenance jobs.
 - Added distinct JWT refresh-token signing secret support through `JWT_REFRESH_SECRET_KEY`.
 - Hardened production environment validation for separate access/refresh JWT secrets, SMTP, Redis, CORS, and worker settings.

@@ -2,17 +2,30 @@
   "name": "academy-portal",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "Academy Portal full-stack final project",
   "scripts": {
-    "sync:frontend": "powershell -ExecutionPolicy Bypass -File scripts/sync-frontend.ps1",
-    "compose:up": "npm run sync:frontend && docker compose up --build",
+    "compose:up": "docker compose up --build",
     "compose:down": "docker compose down",
     "compose:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build",
     "verify": "powershell -ExecutionPolicy Bypass -File scripts/verify-submission.ps1",
+    "lint": "npm run server:lint && npm run frontend:lint",
     "server:dev": "npm --prefix server run dev",
     "server:test": "npm --prefix server test",
     "server:lint": "npm --prefix server run lint",
-    "frontend:dev": "npm --prefix FRONT-4 run dev",
-    "frontend:build": "npm --prefix FRONT-4 run build"
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:lint": "eslint frontend/src frontend/vite.config.js",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.4"
   }
 }

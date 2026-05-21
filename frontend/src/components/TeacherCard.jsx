@@ -8,5 +8,5 @@ export default function TeacherCard({ teacher }) {
         <span className="rating">Rating {teacher.rating}</span>
       </div>
     </article>
-  );
+  )
 }

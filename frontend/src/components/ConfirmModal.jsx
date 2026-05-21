@@ -1,14 +1,16 @@
 export default function ConfirmModal({ message, onConfirm, onCancel }) {
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0,0,0,0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.3)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 100,
+      }}
+    >
       <div className="card" style={{ maxWidth: 400, width: '100%' }}>
         <h3>Are you sure?</h3>
         <p>{message}</p>

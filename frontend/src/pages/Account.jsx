@@ -125,7 +125,9 @@ export default function Account() {
               value={passwordForm.new_password}
               onChange={handlePasswordChange}
             />
-            <small className="subtle">Use at least 8 characters with uppercase, lowercase, and a number.</small>
+            <small className="subtle">
+              Use at least 8 characters with uppercase, lowercase, and a number.
+            </small>
           </div>
 
           {passwordError && <div className="message-banner">{passwordError}</div>}

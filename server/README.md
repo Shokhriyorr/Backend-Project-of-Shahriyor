@@ -21,6 +21,8 @@ npm run seed:demo
 npm start
 ```
 
+Prisma migrations and Jest tests live at the repository root (`../migrations` and `../tests`) so the final submission has a single canonical history and test suite.
+
 Default URLs:
 
 - API: `http://localhost:3000`
@@ -30,7 +32,7 @@ Default URLs:
 
 ## Environment
 
-Copy `.env.example` to `.env` and set real values.
+Copy the root `.env.example` to root `.env` and set real values.
 
 Required for local/demo:
 
@@ -99,5 +101,4 @@ npm run predefense:strict
 - Business writes use Prisma Client only; no raw SQL is used in application code.
 - Background email jobs expose queue counts, failures, attempts, and recent jobs through admin endpoints.
 
-See `DEFENSE_SCRIPT.md` for the live demonstration flow.
-See `CODE_EXPLANATION_RU.md` for a Russian file-by-file explanation.
+See `../docs/defense-script.md` for the live demonstration flow.

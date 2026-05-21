@@ -20,7 +20,10 @@ export default function Register() {
     try {
       const data = await api.register({ ...formData, role: 'student' })
       if (data.verification_required) {
-        setSuccess(data.message || 'Account created. Check your email to verify the account before logging in.')
+        setSuccess(
+          data.message ||
+            'Account created. Check your email to verify the account before logging in.',
+        )
       } else {
         navigate('/login', { replace: true })
       }
@@ -34,7 +37,7 @@ export default function Register() {
     try {
       await api.resendVerification({ email: formData.email })
       setResendStatus('Verification email sent! Check your inbox.')
-    } catch (err) {
+    } catch {
       setResendStatus('Failed to resend verification email.')
     }
   }
@@ -51,15 +54,17 @@ export default function Register() {
           <div className="message-banner success">{success}</div>
           {resendStatus && <div className="message-banner info">{resendStatus}</div>}
           <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
-            <button 
-              className="button button-secondary" 
+            <button
+              className="button button-secondary"
               onClick={handleResendVerification}
               disabled={!formData.email}
               type="button"
             >
               Resend Verification Email
             </button>
-            <p>Already have an account? <Link to="/login">Log in</Link></p>
+            <p>
+              Already have an account? <Link to="/login">Log in</Link>
+            </p>
           </div>
         </div>
       ) : (
@@ -88,13 +93,19 @@ export default function Register() {
               value={formData.password}
               onChange={handleChange}
             />
-            <small className="subtle">Use at least 8 characters with uppercase, lowercase, and a number.</small>
+            <small className="subtle">
+              Use at least 8 characters with uppercase, lowercase, and a number.
+            </small>
           </div>
 
           {error && <div className="message-banner">{error}</div>}
 
-          <button className="button button-primary" type="submit">Register</button>
-          <p>Already have an account? <Link to="/login">Log in</Link></p>
+          <button className="button button-primary" type="submit">
+            Register
+          </button>
+          <p>
+            Already have an account? <Link to="/login">Log in</Link>
+          </p>
         </form>
       )}
     </div>

@@ -32,7 +32,9 @@ describe('environment validation', () => {
       JWT_SECRET_KEY: 'replace-with-a-long-random-string-at-least-32-characters',
     })
 
-    await expect(import('../../src/config/env.js')).rejects.toThrow('JWT access secret must be a real production secret')
+    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+      'JWT access secret must be a real production secret',
+    )
   })
 
   test('requires a distinct refresh secret in production', async () => {
@@ -40,7 +42,9 @@ describe('environment validation', () => {
       JWT_REFRESH_SECRET_KEY: 'production-secret-with-enough-entropy-123456',
     })
 
-    await expect(import('../../src/config/env.js')).rejects.toThrow('JWT_REFRESH_SECRET_KEY must be different')
+    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+      'JWT_REFRESH_SECRET_KEY must be different',
+    )
   })
 
   test('rejects wildcard CORS origins in production', async () => {
@@ -48,7 +52,9 @@ describe('environment validation', () => {
       CORS_ORIGINS: '*',
     })
 
-    await expect(import('../../src/config/env.js')).rejects.toThrow('CORS_ORIGINS cannot contain * in production')
+    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+      'CORS_ORIGINS cannot contain * in production',
+    )
   })
 
   test('requires smtp and redis in production', async () => {
@@ -58,13 +64,15 @@ describe('environment validation', () => {
       ENABLE_BACKGROUND_WORKERS: 'false',
     })
 
-    await expect(import('../../src/config/env.js')).rejects.toThrow('EMAIL_PROVIDER must be smtp in production')
+    await expect(import('../../server/src/config/env.js')).rejects.toThrow(
+      'EMAIL_PROVIDER must be smtp in production',
+    )
   })
 
   test('accepts explicit production configuration', async () => {
     setProductionEnv()
 
-    const { env } = await import('../../src/config/env.js')
+    const { env } = await import('../../server/src/config/env.js')
 
     expect(env.NODE_ENV).toBe('production')
     expect(env.CORS_ORIGINS).toEqual(['https://academy.example.com'])

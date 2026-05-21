@@ -26,22 +26,20 @@ function sendTooManyRequests(res, req, { max, windowMs, remaining, resetAt }) {
   res.setHeader('Retry-After', String(retryAfterSeconds))
   res.setHeader('X-RateLimit-Limit', String(max))
   res.setHeader('X-RateLimit-Remaining', String(Math.max(0, remaining)))
-  return res.status(429).json(buildErrorBody(req, {
-    code: 'too_many_requests',
-    message: 'Too many requests. Please try again shortly.',
-    details: {
-      limit: max,
-      window_seconds: Math.ceil(windowMs / 1000),
-      retry_after_seconds: retryAfterSeconds,
-    },
-  }))
+  return res.status(429).json(
+    buildErrorBody(req, {
+      code: 'too_many_requests',
+      message: 'Too many requests. Please try again shortly.',
+      details: {
+        limit: max,
+        window_seconds: Math.ceil(windowMs / 1000),
+        retry_after_seconds: retryAfterSeconds,
+      },
+    }),
+  )
 }
 
-export function createRedisRateLimiter({
-  windowMs = 60_000,
-  max = 5,
-  keyPrefix = 'auth',
-} = {}) {
+export function createRedisRateLimiter({ windowMs = 60_000, max = 5, keyPrefix = 'auth' } = {}) {
   return async function redisRateLimiter(req, res, next) {
     const redis = getRateLimitRedis()
     const bucketKey = `${keyPrefix}:${req.ip}:${req.baseUrl}${req.path}`
@@ -49,7 +47,12 @@ export function createRedisRateLimiter({
     if (!redis) {
       const result = consumeMemoryBucket(bucketKey, windowMs, max)
       if (!result.allowed) {
-        return sendTooManyRequests(res, req, { max, windowMs, remaining: result.remaining, resetAt: result.resetAt })
+        return sendTooManyRequests(res, req, {
+          max,
+          windowMs,
+          remaining: result.remaining,
+          resetAt: result.resetAt,
+        })
       }
       return next()
     }
@@ -76,7 +79,12 @@ export function createRedisRateLimiter({
       console.error('Redis rate limiter failed, using in-memory fallback:', error.message)
       const result = consumeMemoryBucket(bucketKey, windowMs, max)
       if (!result.allowed) {
-        return sendTooManyRequests(res, req, { max, windowMs, remaining: result.remaining, resetAt: result.resetAt })
+        return sendTooManyRequests(res, req, {
+          max,
+          windowMs,
+          remaining: result.remaining,
+          resetAt: result.resetAt,
+        })
       }
       return next()
     }

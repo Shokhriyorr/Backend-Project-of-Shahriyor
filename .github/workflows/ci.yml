@@ -59,7 +59,9 @@ jobs:
       - run: npm run prisma:deploy
       - run: npm run lint
       - run: npm test
-      - run: docker build -t academy-portal-api .
+      - name: Docker build
+        working-directory: .
+        run: docker build -f server/Dockerfile -t academy-portal-api .
 
   frontend:
     runs-on: ubuntu-latest

@@ -47,18 +47,12 @@ export function buildCreatedAtCursorFilter(rawCursor, direction = 'desc', fieldN
 
   if (direction === 'asc') {
     return {
-      OR: [
-        { [fieldName]: { gt: createdAt } },
-        { [fieldName]: createdAt, id: { gt: id } },
-      ],
+      OR: [{ [fieldName]: { gt: createdAt } }, { [fieldName]: createdAt, id: { gt: id } }],
     }
   }
 
   return {
-    OR: [
-      { [fieldName]: { lt: createdAt } },
-      { [fieldName]: createdAt, id: { lt: id } },
-    ],
+    OR: [{ [fieldName]: { lt: createdAt } }, { [fieldName]: createdAt, id: { lt: id } }],
   }
 }
 

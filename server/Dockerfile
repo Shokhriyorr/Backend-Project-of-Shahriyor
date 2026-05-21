@@ -1,14 +1,15 @@
 FROM node:22-alpine
 
-WORKDIR /app
+WORKDIR /workspace/server
 
-COPY package.json package-lock.json prisma.config.ts ./
-COPY prisma ./prisma
+COPY server/package.json server/package-lock.json server/prisma.config.ts ./
+COPY server/prisma ./prisma
+COPY migrations ../migrations
 RUN npm ci
 
-COPY openapi.yaml ./openapi.yaml
-COPY scripts ./scripts
-COPY src ./src
+COPY openapi.yaml ../openapi.yaml
+COPY server/scripts ./scripts
+COPY server/src ./src
 
 # Prisma generate only needs a syntactically valid URL at image build time.
 ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/academy_db

@@ -13,17 +13,21 @@ export function startMaintenanceWorker() {
 
   const connection = getRedisConnection()
 
-  worker = new Worker(env.MAINTENANCE_QUEUE_NAME, async (job) => {
-    if (job.name === 'sync-course-daily-stats') {
-      await syncCourseDailyStats()
-      return { synced_at: new Date().toISOString() }
-    }
+  worker = new Worker(
+    env.MAINTENANCE_QUEUE_NAME,
+    async (job) => {
+      if (job.name === 'sync-course-daily-stats') {
+        await syncCourseDailyStats()
+        return { synced_at: new Date().toISOString() }
+      }
 
-    throw new Error(`Unsupported maintenance job: ${job.name}`)
-  }, {
-    connection,
-    concurrency: 1,
-  })
+      throw new Error(`Unsupported maintenance job: ${job.name}`)
+    },
+    {
+      connection,
+      concurrency: 1,
+    },
+  )
 
   queueEvents = new QueueEvents(env.MAINTENANCE_QUEUE_NAME, {
     connection,

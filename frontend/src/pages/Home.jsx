@@ -4,25 +4,28 @@ import CourseCard from '../components/CourseCard'
 import TeacherCard from '../components/TeacherCard'
 
 export default function Home() {
-  const courses     = useSelector((state) => state.data.courses)
-  const teachers    = useSelector((state) => state.data.teachers)
-  const categories  = useSelector((state) => state.data.categories)
+  const courses = useSelector((state) => state.data.courses)
+  const teachers = useSelector((state) => state.data.teachers)
+  const categories = useSelector((state) => state.data.categories)
   const enrolledIds = useSelector((state) => state.data.enrolledIds)
 
-  const [searchTerm,       setSearchTerm]       = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
 
-  const categoryNames = ['All', ...new Set(
-    courses.map((course) => {
-      const cat = categories.find((c) => c.id === course.categoryId)
-      return cat?.name
-    }),
-  )]
+  const categoryNames = [
+    'All',
+    ...new Set(
+      courses.map((course) => {
+        const cat = categories.find((c) => c.id === course.categoryId)
+        return cat?.name
+      }),
+    ),
+  ]
 
   const normalizedSearch = searchTerm.trim().toLowerCase()
 
   const filteredCourses = courses.filter((course) => {
-    const teacher  = teachers.find((item) => item.id === course.teacherId)
+    const teacher = teachers.find((item) => item.id === course.teacherId)
     const category = categories.find((c) => c.id === course.categoryId)
 
     const matchesSearch =
@@ -32,9 +35,7 @@ export default function Home() {
       teacher?.name.toLowerCase().includes(normalizedSearch) ||
       category?.name.toLowerCase().includes(normalizedSearch)
 
-    const matchesCategory =
-      selectedCategory === 'All' ||
-      category?.name === selectedCategory
+    const matchesCategory = selectedCategory === 'All' || category?.name === selectedCategory
 
     return matchesSearch && matchesCategory
   })
@@ -82,7 +83,9 @@ export default function Home() {
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             {categoryNames.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
@@ -99,7 +102,7 @@ export default function Home() {
         {filteredCourses.length ? (
           <div className="grid grid-courses">
             {filteredCourses.map((course) => {
-              const teacher  = teachers.find((t) => t.id === course.teacherId)
+              const teacher = teachers.find((t) => t.id === course.teacherId)
               const category = categories.find((c) => c.id === course.categoryId)
               return (
                 <CourseCard

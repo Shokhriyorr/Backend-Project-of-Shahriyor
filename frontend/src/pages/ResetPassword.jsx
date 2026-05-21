@@ -51,8 +51,12 @@ export default function ResetPassword() {
         {error && <div className="message-banner">{error}</div>}
         {status && <div className="message-banner success">{status}</div>}
 
-        <button className="button button-primary" disabled={!token} type="submit">Update password</button>
-        <p><Link to="/login">Back to login</Link></p>
+        <button className="button button-primary" disabled={!token} type="submit">
+          Update password
+        </button>
+        <p>
+          <Link to="/login">Back to login</Link>
+        </p>
       </form>
     </div>
   )

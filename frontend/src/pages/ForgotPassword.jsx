@@ -14,7 +14,10 @@ export default function ForgotPassword() {
 
     try {
       const payload = await api.requestPasswordReset({ email })
-      setStatus(payload.message || 'If an account exists for this email, a password reset email has been queued.')
+      setStatus(
+        payload.message ||
+          'If an account exists for this email, a password reset email has been queued.',
+      )
     } catch (err) {
       setError(err.message)
     }
@@ -43,8 +46,12 @@ export default function ForgotPassword() {
         {error && <div className="message-banner">{error}</div>}
         {status && <div className="message-banner success">{status}</div>}
 
-        <button className="button button-primary" type="submit">Send reset link</button>
-        <p><Link to="/login">Back to login</Link></p>
+        <button className="button button-primary" type="submit">
+          Send reset link
+        </button>
+        <p>
+          <Link to="/login">Back to login</Link>
+        </p>
       </form>
     </div>
   )

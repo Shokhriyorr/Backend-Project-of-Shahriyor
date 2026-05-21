@@ -14,9 +14,15 @@ import teachersRouter from './routes/teachers.js'
 import usersRouter from './routes/users.js'
 import { requireAuth } from './middleware/auth.js'
 import { buildReadinessSnapshot } from './services/readinessService.js'
-import { ApiError, asyncHandler, errorHandler, notFoundHandler, requestIdMiddleware } from './utils/api.js'
+import {
+  ApiError,
+  asyncHandler,
+  errorHandler,
+  notFoundHandler,
+  requestIdMiddleware,
+} from './utils/api.js'
 
-const openApiPath = new URL('../openapi.yaml', import.meta.url)
+const openApiPath = new URL('../../openapi.yaml', import.meta.url)
 const openApiDocument = YAML.parse(fs.readFileSync(openApiPath, 'utf8'))
 
 if (!BigInt.prototype.toJSON) {
@@ -30,33 +36,42 @@ const app = express()
 
 app.set('trust proxy', 1)
 app.use(requestIdMiddleware)
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin || env.CORS_ORIGINS.includes(origin)) {
-      return callback(null, true)
-    }
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || env.CORS_ORIGINS.includes(origin)) {
+        return callback(null, true)
+      }
 
-    return callback(new ApiError(403, 'forbidden', 'Origin is not allowed by CORS.'))
-  },
-}))
+      return callback(new ApiError(403, 'forbidden', 'Origin is not allowed by CORS.'))
+    },
+  }),
+)
 app.use(express.json())
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true })
 })
 
-app.get('/health/ready', asyncHandler(async (_req, res) => {
-  const snapshot = await buildReadinessSnapshot()
-  return res.status(snapshot.ok ? 200 : 503).json(snapshot)
-}))
+app.get(
+  '/health/ready',
+  asyncHandler(async (_req, res) => {
+    const snapshot = await buildReadinessSnapshot()
+    return res.status(snapshot.ok ? 200 : 503).json(snapshot)
+  }),
+)
 
 app.get('/openapi.yaml', (_req, res) => {
   res.type('application/yaml').sendFile(fileURLToPath(openApiPath))
 })
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument, {
-  explorer: true,
-}))
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(openApiDocument, {
+    explorer: true,
+  }),
+)
 
 app.use('/api/auth', authRouter)
 app.use('/api/admin', adminRouter)

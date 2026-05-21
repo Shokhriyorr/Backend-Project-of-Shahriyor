@@ -28,7 +28,7 @@ describe('email service', () => {
     process.env.SMTP_PASS = 'smtp-pass'
     process.env.SMTP_SECURE = 'false'
 
-    const { sendEmailNow } = await import('../../src/services/emailService.js')
+    const { sendEmailNow } = await import('../../server/src/services/emailService.js')
     const result = await sendEmailNow({
       to: 'student@example.com',
       subject: 'Welcome',
@@ -66,7 +66,7 @@ describe('email service', () => {
     process.env.EMAIL_PROVIDER = 'log'
     process.env.EMAIL_LOG_PATH = logPath
 
-    const { sendEmailNow } = await import('../../src/services/emailService.js')
+    const { sendEmailNow } = await import('../../server/src/services/emailService.js')
     const result = await sendEmailNow({
       to: 'student@example.com',
       subject: 'Verify',

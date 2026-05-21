@@ -26,7 +26,7 @@ export default function Login() {
 
       if (data.user.role === 'admin') {
         navigate('/admin', { replace: true })
-      } else {  
+      } else {
         const from = location.state?.from
         navigate(from ?? '/my-courses', { replace: true })
       }
@@ -40,7 +40,7 @@ export default function Login() {
     try {
       await api.resendVerification({ email: formData.email })
       setResendStatus('Verification email sent! Check your inbox.')
-    } catch (err) {
+    } catch {
       setResendStatus('Failed to resend verification email.')
     }
   }
@@ -84,8 +84,8 @@ export default function Login() {
         {error && error.includes('Email verification is required') && (
           <div style={{ marginTop: '12px' }}>
             {resendStatus && <div className="message-banner info">{resendStatus}</div>}
-            <button 
-              className="button button-secondary" 
+            <button
+              className="button button-secondary"
               onClick={handleResendVerification}
               disabled={!formData.email}
               style={{ width: '100%' }}
@@ -96,9 +96,15 @@ export default function Login() {
           </div>
         )}
 
-        <button className="button button-primary" type="submit">Log In</button>
-        <p><Link to="/forgot-password">Forgot password?</Link></p>
-        <p>Don't have an account? <Link to="/register">Register</Link></p>
+        <button className="button button-primary" type="submit">
+          Log In
+        </button>
+        <p>
+          <Link to="/forgot-password">Forgot password?</Link>
+        </p>
+        <p>
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
       </form>
     </div>
   )

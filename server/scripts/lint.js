@@ -45,13 +45,19 @@ for (const file of collectJavaScriptFiles(path.join(process.cwd(), 'src'))) {
   const matchedPattern = rawSqlPatterns.find((pattern) => pattern.test(content))
 
   if (matchedPattern) {
-    throw new Error(`Raw SQL-like access is not allowed in application code: ${path.relative(process.cwd(), file)}`)
+    throw new Error(
+      `Raw SQL-like access is not allowed in application code: ${path.relative(process.cwd(), file)}`,
+    )
   }
 }
 
-YAML.parse(fs.readFileSync(path.join(process.cwd(), 'openapi.yaml'), 'utf8'))
-execFileSync(process.execPath, [path.join(process.cwd(), 'node_modules', 'prisma', 'build', 'index.js'), 'validate'], {
-  stdio: 'inherit',
-})
+YAML.parse(fs.readFileSync(path.join(process.cwd(), '..', 'openapi.yaml'), 'utf8'))
+execFileSync(
+  process.execPath,
+  [path.join(process.cwd(), 'node_modules', 'prisma', 'build', 'index.js'), 'validate'],
+  {
+    stdio: 'inherit',
+  },
+)
 
 console.log('Lint checks passed.')

@@ -29,14 +29,11 @@ export async function queueEnrollmentCancelledEmail({ user, enrollment }) {
 }
 
 export async function queueCoursePublishedEmail({ course, actorEmail }) {
-  const recipients = new Set([
-    actorEmail,
-    ...env.ADMIN_NOTIFICATION_EMAILS,
-  ].filter(Boolean))
+  const recipients = new Set([actorEmail, ...env.ADMIN_NOTIFICATION_EMAILS].filter(Boolean))
 
-  return Promise.all([...recipients].map((to) => (
-    enqueueBestEffort(buildCoursePublishedEmail({ to, course }))
-  )))
+  return Promise.all(
+    [...recipients].map((to) => enqueueBestEffort(buildCoursePublishedEmail({ to, course }))),
+  )
 }
 
 export async function queueAccountUpdatedEmail({ user, changedFields }) {

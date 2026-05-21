@@ -5,13 +5,13 @@ import { setCourses } from '../store/dataSlice.js'
 import * as api from '../api.js'
 
 export default function Courses() {
-  const dispatch    = useDispatch()
-  const courses     = useSelector((state) => state.data.courses)
-  const teachers    = useSelector((state) => state.data.teachers)
-  const categories  = useSelector((state) => state.data.categories)
+  const dispatch = useDispatch()
+  const courses = useSelector((state) => state.data.courses)
+  const teachers = useSelector((state) => state.data.teachers)
+  const categories = useSelector((state) => state.data.categories)
   const enrolledIds = useSelector((state) => state.data.enrolledIds)
 
-  const [searchTerm,       setSearchTerm]       = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [loading, setLoading] = useState(false)
 
@@ -33,12 +33,15 @@ export default function Courses() {
     return () => clearTimeout(timeout)
   }, [dispatch, searchTerm])
 
-  const categoryNames = ['All', ...new Set(
-    courses.map((c) => {
-      const cat = categories.find((cat) => cat.id === c.categoryId)
-      return cat?.name
-    }),
-  )]
+  const categoryNames = [
+    'All',
+    ...new Set(
+      courses.map((c) => {
+        const cat = categories.find((cat) => cat.id === c.categoryId)
+        return cat?.name
+      }),
+    ),
+  ]
 
   const filtered = courses.filter((course) => {
     const category = categories.find((c) => c.id === course.categoryId)
@@ -73,7 +76,9 @@ export default function Courses() {
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             {categoryNames.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
@@ -84,7 +89,7 @@ export default function Courses() {
         {filtered.length ? (
           <div className="grid grid-courses">
             {filtered.map((course) => {
-              const teacher  = teachers.find((t) => t.id === course.teacherId)
+              const teacher = teachers.find((t) => t.id === course.teacherId)
               const category = categories.find((c) => c.id === course.categoryId)
               return (
                 <CourseCard

@@ -19,12 +19,7 @@ export function hashAccountToken(token) {
   return createHash('sha256').update(token).digest('hex')
 }
 
-export async function createAccountToken({
-  tx = prisma,
-  userId,
-  purpose,
-  ttlMinutes,
-}) {
+export async function createAccountToken({ tx = prisma, userId, purpose, ttlMinutes }) {
   const token = createOpaqueToken()
   const now = new Date()
 
@@ -65,10 +60,10 @@ async function consumeAccountToken({ tx, token, purpose }) {
   })
 
   if (
-    !tokenRecord
-    || tokenRecord.purpose !== purpose
-    || tokenRecord.usedAt
-    || tokenRecord.expiresAt <= new Date()
+    !tokenRecord ||
+    tokenRecord.purpose !== purpose ||
+    tokenRecord.usedAt ||
+    tokenRecord.expiresAt <= new Date()
   ) {
     throw new ApiError(401, 'unauthorized', 'Token is invalid or expired.')
   }

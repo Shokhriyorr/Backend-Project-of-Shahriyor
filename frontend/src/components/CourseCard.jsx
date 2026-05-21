@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 
 export default function CourseCard({ course, teacher, isEnrolled = false, category }) {
   return (
     <article className="card course-card">
       <div className="card-topline">
-        <span className="badge">{category?.name ?? "—"}</span>
+        <span className="badge">{category?.name ?? '—'}</span>
         {isEnrolled && <span className="status-pill">Enrolled</span>}
       </div>
 
@@ -12,12 +12,12 @@ export default function CourseCard({ course, teacher, isEnrolled = false, catego
       <p>{course.shortDescription}</p>
 
       <div className="meta-row">
-        <span>{teacher?.name ?? "Teacher TBD"}</span>
+        <span>{teacher?.name ?? 'Teacher TBD'}</span>
         <span>{course.lessons} lessons</span>
       </div>
 
       <div className="meta-row subtle">
-        <span>{teacher?.subject ?? "Subject"}</span>
+        <span>{teacher?.subject ?? 'Subject'}</span>
         <span>{course.level}</span>
       </div>
 
@@ -25,5 +25,5 @@ export default function CourseCard({ course, teacher, isEnrolled = false, catego
         View details
       </Link>
     </article>
-  );
+  )
 }

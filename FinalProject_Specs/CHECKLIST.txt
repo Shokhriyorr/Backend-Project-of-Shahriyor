@@ -1,7 +1,0 @@
-[ ] I validated openapi.yaml in editor.swagger.io
-[x] I ran SQL schema through syntax checker
-[x] All documents include page numbers (if docx) or clear section headers (if txt)
-
-Notes:
-- Prisma schema text from database-schema.txt was validated locally with `prisma validate`.
-- openapi.yaml passed local validation with `swagger-cli validate`, but the exact course checklist wording still requires one manual check in editor.swagger.io before submission.

@@ -6,10 +6,11 @@ Full-stack final defense project: Express + Prisma backend, React demo frontend,
 
 ```text
 .
-|-- server/                 Express API, Prisma schema, workers, tests
+|-- server/                 Express API, Prisma schema, workers, routes, services
 |-- frontend/               React + Vite demo UI served by nginx
-|-- migrations/             Prisma migrate history exposed at repo root
-|-- tests/                  Jest suites exposed at repo root
+|-- migrations/             Canonical Prisma migrate history
+|-- tests/                  Canonical Jest unit/integration suites
+|-- docs/                   Blueprint notes and defense script
 |-- postman/                Defense Postman collection/environment
 |-- docker-compose.yml      API + worker + frontend + PostgreSQL + Redis
 |-- openapi.yaml            API contract
@@ -43,6 +44,7 @@ Seeded admin:
 
 - Backend framework: Express.js, matching the Week 1 JavaScript/Node choice.
 - ORM: Prisma only. Application source is scanned by `npm run lint` for raw SQL-like access.
+- Migrations/tests: kept once at the repository root to satisfy submission requirements and avoid duplicate histories.
 - Database: PostgreSQL 15 with Prisma migrations and ACID transactions for enrollment seat changes.
 - Cache/queue: Redis powers BullMQ email and maintenance queues plus Redis-backed auth rate limiting.
 - Frontend: React + Vite consumes the live API through `/api`; nginx proxies API/docs/openapi traffic to the backend container.
@@ -108,6 +110,13 @@ npm run verify
 
 This runs backend Jest tests, syntax/raw-SQL lint checks, frontend production build, and `docker compose config`.
 
+Quality tooling:
+
+```bash
+npm run lint
+npm run format:check
+```
+
 Backend-only checks:
 
 ```bash
@@ -145,3 +154,4 @@ npm run predefense:strict
 3. Demonstrate browsing courses, enrolling, cancelling enrollment, and admin course publishing.
 4. Show queued/completed jobs at `/api/admin/jobs/email` and `/api/admin/jobs/maintenance`.
 5. Open Swagger UI at `/docs` and the Postman collection in `postman/`.
+6. Use `docs/defense-script.md` as the live demo script.

@@ -47,12 +47,14 @@ export function serializeCourseDailyStat(stat) {
     active_enrollment_count: stat.activeEnrollmentCount,
     new_enrollment_count: stat.newEnrollmentCount,
     created_at: stat.createdAt.toISOString(),
-    course: stat.course ? {
-      id: stat.course.id.toString(),
-      slug: stat.course.slug,
-      name: stat.course.name,
-      status: stat.course.status,
-    } : null,
+    course: stat.course
+      ? {
+          id: stat.course.id.toString(),
+          slug: stat.course.slug,
+          name: stat.course.name,
+          status: stat.course.status,
+        }
+      : null,
   }
 }
 
@@ -108,16 +110,20 @@ export function serializeCourse(course) {
     createdAt: course.createdAt.toISOString(),
     updated_at: course.updatedAt.toISOString(),
     updatedAt: course.updatedAt.toISOString(),
-    teacher: course.teacher ? {
-      id: course.teacher.id.toString(),
-      full_name: course.teacher.fullName,
-      subject: course.teacher.subject,
-    } : null,
-    category: course.courseCategory ? {
-      id: course.courseCategory.id.toString(),
-      slug: course.courseCategory.slug,
-      name: course.courseCategory.name,
-    } : null,
+    teacher: course.teacher
+      ? {
+          id: course.teacher.id.toString(),
+          full_name: course.teacher.fullName,
+          subject: course.teacher.subject,
+        }
+      : null,
+    category: course.courseCategory
+      ? {
+          id: course.courseCategory.id.toString(),
+          slug: course.courseCategory.slug,
+          name: course.courseCategory.name,
+        }
+      : null,
     active_enrollment_count: course._count?.enrollments ?? course.activeEnrollmentCount ?? 0,
   }
 }
@@ -129,21 +135,23 @@ export function serializeEnrollment(enrollment) {
     status: enrollment.status,
     enrolled_at: enrollment.enrolledAt.toISOString(),
     cancelled_at: enrollment.cancelledAt?.toISOString() ?? null,
-    course: enrollment.course ? {
-      id: enrollment.course.id.toString(),
-      slug: enrollment.course.slug,
-      name: enrollment.course.name,
-      level: enrollment.course.level,
-      teacher: {
-        id: enrollment.course.teacher.id.toString(),
-        full_name: enrollment.course.teacher.fullName,
-        subject: enrollment.course.teacher.subject,
-      },
-      category: {
-        id: enrollment.course.courseCategory.id.toString(),
-        slug: enrollment.course.courseCategory.slug,
-        name: enrollment.course.courseCategory.name,
-      },
-    } : null,
+    course: enrollment.course
+      ? {
+          id: enrollment.course.id.toString(),
+          slug: enrollment.course.slug,
+          name: enrollment.course.name,
+          level: enrollment.course.level,
+          teacher: {
+            id: enrollment.course.teacher.id.toString(),
+            full_name: enrollment.course.teacher.fullName,
+            subject: enrollment.course.teacher.subject,
+          },
+          category: {
+            id: enrollment.course.courseCategory.id.toString(),
+            slug: enrollment.course.courseCategory.slug,
+            name: enrollment.course.courseCategory.name,
+          },
+        }
+      : null,
   }
 }

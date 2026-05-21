@@ -1,8 +1,0 @@
-node_modules
-coverage
-dist
-*.log
-npm-debug.log
-.env
-.env.*
-!.env.example

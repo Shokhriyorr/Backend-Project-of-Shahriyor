@@ -29,7 +29,8 @@ services:
 
   api:
     build:
-      context: ./server
+      context: .
+      dockerfile: server/Dockerfile
     restart: unless-stopped
     depends_on:
       db:
@@ -75,7 +76,14 @@ services:
     ports:
       - '${BACKEND_PORT:-3000}:3000'
     healthcheck:
-      test: ['CMD', 'node', '--input-type=module', '-e', "const r=await fetch('http://127.0.0.1:3000/health');process.exit(r.ok?0:1)"]
+      test:
+        [
+          'CMD',
+          'node',
+          '--input-type=module',
+          '-e',
+          "const r=await fetch('http://127.0.0.1:3000/health');process.exit(r.ok?0:1)",
+        ]
       interval: 15s
       timeout: 5s
       retries: 8
@@ -88,7 +96,8 @@ services:
 
   worker:
     build:
-      context: ./server
+      context: .
+      dockerfile: server/Dockerfile
     restart: unless-stopped
     depends_on:
       api:

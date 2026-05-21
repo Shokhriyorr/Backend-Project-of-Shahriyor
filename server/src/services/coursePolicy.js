@@ -13,9 +13,14 @@ export function validatePublicationPayload(courseData) {
   if (!courseData.capacity) missingFields.push('capacity')
 
   if (missingFields.length > 0) {
-    throw new ApiError(422, 'unprocessable_entity', 'Course cannot be published while required fields are missing.', {
-      missing_fields: missingFields,
-    })
+    throw new ApiError(
+      422,
+      'unprocessable_entity',
+      'Course cannot be published while required fields are missing.',
+      {
+        missing_fields: missingFields,
+      },
+    )
   }
 }
 

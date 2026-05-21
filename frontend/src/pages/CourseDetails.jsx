@@ -6,11 +6,11 @@ import * as api from '../api.js'
 
 export default function CourseDetails() {
   const { courseId } = useParams()
-  const dispatch    = useDispatch()
-  const user        = useSelector((state) => state.auth.user)
-  const courses     = useSelector((state) => state.data.courses)
-  const teachers    = useSelector((state) => state.data.teachers)
-  const categories  = useSelector((state) => state.data.categories)
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.auth.user)
+  const courses = useSelector((state) => state.data.courses)
+  const teachers = useSelector((state) => state.data.teachers)
+  const categories = useSelector((state) => state.data.categories)
   const enrolledIds = useSelector((state) => state.data.enrolledIds)
 
   const [feedback, setFeedback] = useState('')
@@ -22,18 +22,20 @@ export default function CourseDetails() {
       <section className="empty-state card">
         <h1>Course not found</h1>
         <p>It may have been removed.</p>
-        <Link className="button button-primary" to="/">Back to Home</Link>
+        <Link className="button button-primary" to="/">
+          Back to Home
+        </Link>
       </section>
     )
   }
 
-  const teacher    = teachers.find((t) => t.id === course.teacherId)
+  const teacher = teachers.find((t) => t.id === course.teacherId)
   const isEnrolled = enrolledIds.includes(course.id)
-  const category   = categories.find((c) => c.id === course.categoryId)
+  const category = categories.find((c) => c.id === course.categoryId)
 
   const onEnroll = async () => {
-    if (!user)                           return setFeedback('Login first.')
-    if (user.role !== 'student')         return setFeedback('Enrollment is available only to the students.')
+    if (!user) return setFeedback('Login first.')
+    if (user.role !== 'student') return setFeedback('Enrollment is available only to the students.')
     if (enrolledIds.includes(course.id)) return setFeedback('You already enrolled in this course.')
     try {
       await api.enroll(course.id)
@@ -82,14 +84,14 @@ export default function CourseDetails() {
           {!user && (
             <>
               <p>Log in as a student to enroll.</p>
-              <Link className="button button-primary" to="/login">Log In</Link>
+              <Link className="button button-primary" to="/login">
+                Log In
+              </Link>
             </>
           )}
 
           {user?.role === 'admin' && (
-            <div className="message-banner info">
-              Admins can't enroll in courses.
-            </div>
+            <div className="message-banner info">Admins can't enroll in courses.</div>
           )}
 
           {user?.role === 'student' && (

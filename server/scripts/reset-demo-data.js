@@ -44,7 +44,8 @@ const courses = [
     slug: 'react-fundamentals',
     name: 'React Fundamentals',
     shortDescription: 'Learn React basics including components, hooks, and state management',
-    description: 'Complete guide to React fundamentals including components, hooks, state management, and modern React patterns.',
+    description:
+      'Complete guide to React fundamentals including components, hooks, state management, and modern React patterns.',
     categorySlug: 'web-development',
     teacherName: 'John Smith',
     lessons: 12,
@@ -55,7 +56,8 @@ const courses = [
     slug: 'advanced-nodejs',
     name: 'Advanced Node.js',
     shortDescription: 'Master Node.js for building scalable server applications',
-    description: 'Advanced Node.js concepts including streams, clustering, performance optimization, and enterprise patterns.',
+    description:
+      'Advanced Node.js concepts including streams, clustering, performance optimization, and enterprise patterns.',
     categorySlug: 'web-development',
     teacherName: 'Jane Doe',
     lessons: 15,
@@ -66,7 +68,8 @@ const courses = [
     slug: 'python-data-science',
     name: 'Python for Data Science',
     shortDescription: 'Learn Python, pandas, NumPy, and scikit-learn for data analysis',
-    description: 'Comprehensive Python data science course covering pandas, NumPy, matplotlib, and machine learning with scikit-learn.',
+    description:
+      'Comprehensive Python data science course covering pandas, NumPy, matplotlib, and machine learning with scikit-learn.',
     categorySlug: 'data-science',
     teacherName: 'Jane Doe',
     lessons: 20,
@@ -77,7 +80,8 @@ const courses = [
     slug: 'aws-cloud-architecture',
     name: 'AWS Cloud Architecture',
     shortDescription: 'Design and deploy scalable cloud solutions on AWS',
-    description: 'Learn AWS cloud architecture, EC2, S3, Lambda, RDS, and best practices for scalable cloud solutions.',
+    description:
+      'Learn AWS cloud architecture, EC2, S3, Lambda, RDS, and best practices for scalable cloud solutions.',
     categorySlug: 'cloud-computing',
     teacherName: 'John Smith',
     lessons: 14,
@@ -115,19 +119,19 @@ for (const teacher of teachers) {
 
   const saved = existing
     ? await prisma.teacher.update({
-      where: { id: existing.id },
-      data: {
-        rating: teacher.rating,
-        bio: teacher.bio,
-        isActive: true,
-      },
-    })
+        where: { id: existing.id },
+        data: {
+          rating: teacher.rating,
+          bio: teacher.bio,
+          isActive: true,
+        },
+      })
     : await prisma.teacher.create({
-      data: {
-        ...teacher,
-        isActive: true,
-      },
-    })
+        data: {
+          ...teacher,
+          isActive: true,
+        },
+      })
 
   teacherByName.set(saved.fullName, saved)
 }
@@ -167,6 +171,8 @@ for (const course of courses) {
   })
 }
 
-console.log(`Seeded ${categories.length} categories, ${teachers.length} teachers, and ${courses.length} courses.`)
+console.log(
+  `Seeded ${categories.length} categories, ${teachers.length} teachers, and ${courses.length} courses.`,
+)
 
 await prisma.$disconnect()

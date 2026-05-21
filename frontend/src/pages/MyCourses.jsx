@@ -6,11 +6,11 @@ import ConfirmModal from '../components/ConfirmModal'
 import * as api from '../api.js'
 
 export default function MyCourses() {
-  const dispatch    = useDispatch()
-  const user        = useSelector((state) => state.auth.user)
-  const courses     = useSelector((state) => state.data.courses)
-  const teachers    = useSelector((state) => state.data.teachers)
-  const categories  = useSelector((state) => state.data.categories)
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.auth.user)
+  const courses = useSelector((state) => state.data.courses)
+  const teachers = useSelector((state) => state.data.teachers)
+  const categories = useSelector((state) => state.data.categories)
   const enrolledIds = useSelector((state) => state.data.enrolledIds)
 
   const [confirmCourseId, setConfirmCourseId] = useState(null)
@@ -31,7 +31,9 @@ export default function MyCourses() {
       <section className="empty-state card">
         <h1>No courses yet</h1>
         <p>Go to the catalog and enroll in something.</p>
-        <Link className="button button-primary" to="/">Browse Courses</Link>
+        <Link className="button button-primary" to="/">
+          Browse Courses
+        </Link>
       </section>
     )
   }
@@ -41,15 +43,24 @@ export default function MyCourses() {
       <h1>My Courses</h1>
 
       {notice && (
-        <div className="message-banner success" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          className="message-banner success"
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        >
           {notice}
-          <button type="button" onClick={() => setNotice('')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+          <button
+            type="button"
+            onClick={() => setNotice('')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px' }}
+          >
+            ✕
+          </button>
         </div>
       )}
 
       <div className="grid grid-courses">
         {enrolled.map((course) => {
-          const teacher  = teachers.find((t) => t.id === course.teacherId)
+          const teacher = teachers.find((t) => t.id === course.teacherId)
           const category = categories.find((c) => c.id === course.categoryId)
 
           return (
@@ -68,7 +79,9 @@ export default function MyCourses() {
               </div>
 
               <div className="action-row">
-                <Link className="button button-ghost" to={`/courses/${course.id}`}>View</Link>
+                <Link className="button button-ghost" to={`/courses/${course.id}`}>
+                  View
+                </Link>
                 <button
                   className="button button-danger"
                   onClick={() => setConfirmCourseId(course.id)}

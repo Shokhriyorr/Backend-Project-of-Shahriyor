@@ -17,7 +17,7 @@ describe('auth route integration', () => {
   async function buildAuthApp() {
     const findUnique = jest.fn()
 
-    jest.unstable_mockModule('../../src/prisma.js', () => ({
+    jest.unstable_mockModule('../../server/src/prisma.js', () => ({
       Prisma: {},
       default: {
         user: {
@@ -27,12 +27,12 @@ describe('auth route integration', () => {
       },
     }))
 
-    jest.unstable_mockModule('../../src/queues/emailQueue.js', () => ({
+    jest.unstable_mockModule('../../server/src/queues/emailQueue.js', () => ({
       enqueueEmail: jest.fn(),
     }))
 
-    const { default: authRouter } = await import('../../src/routes/auth.js')
-    const { errorHandler, requestIdMiddleware } = await import('../../src/utils/api.js')
+    const { default: authRouter } = await import('../../server/src/routes/auth.js')
+    const { errorHandler, requestIdMiddleware } = await import('../../server/src/utils/api.js')
     const app = express()
 
     app.use(requestIdMiddleware)
@@ -63,7 +63,9 @@ describe('auth route integration', () => {
       .expect(403)
 
     expect(response.body.error.code).toBe('forbidden')
-    expect(response.body.error.message).toContain('Public registration is limited to student accounts')
+    expect(response.body.error.message).toContain(
+      'Public registration is limited to student accounts',
+    )
     expect(prisma.user.findUnique).not.toHaveBeenCalled()
   })
 })

@@ -49,7 +49,9 @@ export function clearStoredSession() {
 function extractErrorMessage(payload) {
   const details = payload?.error?.details
   if (details && typeof details === 'object') {
-    const firstDetail = Object.values(details).find((value) => typeof value === 'string' && value.trim())
+    const firstDetail = Object.values(details).find(
+      (value) => typeof value === 'string' && value.trim(),
+    )
     if (firstDetail) {
       return firstDetail
     }
@@ -94,14 +96,18 @@ async function request(path, options = {}, retryOnUnauthorized = true) {
 
   if (res.status === 401 && retryOnUnauthorized && localStorage.getItem(REFRESH_TOKEN_KEY)) {
     const nextToken = await refreshAccessToken()
-    return request(path, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(nextToken ? { Authorization: `Bearer ${nextToken}` } : {}),
-        ...options.headers,
+    return request(
+      path,
+      {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(nextToken ? { Authorization: `Bearer ${nextToken}` } : {}),
+          ...options.headers,
+        },
       },
-    }, false)
+      false,
+    )
   }
 
   if (!res.ok) {
@@ -124,7 +130,8 @@ function extractCollection(payload) {
   return payload?.data ?? []
 }
 
-export const register = (data) => request('/auth/register', { method: 'POST', body: JSON.stringify(data) })
+export const register = (data) =>
+  request('/auth/register', { method: 'POST', body: JSON.stringify(data) })
 export const login = async (data) => {
   const payload = await request('/auth/login', { method: 'POST', body: JSON.stringify(data) })
   persistSession(payload)
@@ -134,28 +141,40 @@ export const logout = async () => {
   const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
   if (refreshToken) {
     try {
-      await request('/auth/logout', {
-        method: 'POST',
-        body: JSON.stringify({ refresh_token: refreshToken }),
-      }, false)
+      await request(
+        '/auth/logout',
+        {
+          method: 'POST',
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        },
+        false,
+      )
     } catch {
       // Local cleanup still happens even if the server session is already gone.
     }
   }
   clearStoredSession()
 }
-export const verifyEmail = (token) => request('/auth/verify-email', { method: 'POST', body: JSON.stringify({ token }) })
-export const resendVerification = (data) => request('/auth/resend-verification', { method: 'POST', body: JSON.stringify(data) })
-export const requestPasswordReset = (data) => request('/auth/password-reset/request', { method: 'POST', body: JSON.stringify(data) })
-export const confirmPasswordReset = (data) => request('/auth/password-reset/confirm', { method: 'POST', body: JSON.stringify(data) })
+export const verifyEmail = (token) =>
+  request('/auth/verify-email', { method: 'POST', body: JSON.stringify({ token }) })
+export const resendVerification = (data) =>
+  request('/auth/resend-verification', { method: 'POST', body: JSON.stringify(data) })
+export const requestPasswordReset = (data) =>
+  request('/auth/password-reset/request', { method: 'POST', body: JSON.stringify(data) })
+export const confirmPasswordReset = (data) =>
+  request('/auth/password-reset/confirm', { method: 'POST', body: JSON.stringify(data) })
 
 export const getMe = () => request('/users/me').then((payload) => payload.data)
-export const updateMe = (data) => request('/users/me', { method: 'PATCH', body: JSON.stringify(data) })
-export const changePassword = (data) => request('/users/me/password', { method: 'PUT', body: JSON.stringify(data) })
+export const updateMe = (data) =>
+  request('/users/me', { method: 'PATCH', body: JSON.stringify(data) })
+export const changePassword = (data) =>
+  request('/users/me/password', { method: 'PUT', body: JSON.stringify(data) })
 
 export const getTeachers = () => request('/teachers').then(extractCollection)
-export const createTeacher = (data) => request('/teachers', { method: 'POST', body: JSON.stringify(data) })
-export const updateTeacher = (id, data) => request(`/teachers/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+export const createTeacher = (data) =>
+  request('/teachers', { method: 'POST', body: JSON.stringify(data) })
+export const updateTeacher = (id, data) =>
+  request(`/teachers/${id}`, { method: 'PUT', body: JSON.stringify(data) })
 export const deleteTeacher = (id) => request(`/teachers/${id}`, { method: 'DELETE' })
 
 export const getCourses = (params = {}) => {
@@ -168,20 +187,27 @@ export const getCourses = (params = {}) => {
   const suffix = query.toString() ? `?${query.toString()}` : ''
   return request(`/courses${suffix}`).then(extractCollection)
 }
-export const getCourse = (id) => request(`/courses/${id}`).then((payload) => payload.data ?? payload)
-export const createCourse = (data) => request('/courses', { method: 'POST', body: JSON.stringify(normalizeCoursePayload(data)) })
-export const updateCourse = (id, data) => request(`/courses/${id}`, { method: 'PUT', body: JSON.stringify(normalizeCoursePayload(data)) })
+export const getCourse = (id) =>
+  request(`/courses/${id}`).then((payload) => payload.data ?? payload)
+export const createCourse = (data) =>
+  request('/courses', { method: 'POST', body: JSON.stringify(normalizeCoursePayload(data)) })
+export const updateCourse = (id, data) =>
+  request(`/courses/${id}`, { method: 'PUT', body: JSON.stringify(normalizeCoursePayload(data)) })
 export const deleteCourse = (id) => request(`/courses/${id}`, { method: 'DELETE' })
 
-export const getEnrollments = () => request('/enrollments').then((payload) => (
-  extractCollection(payload).map((enrollment) => enrollment.course_id ?? enrollment.courseId)
-))
-export const enroll = (courseId) => request('/enrollments', { method: 'POST', body: JSON.stringify({ course_id: courseId }) })
+export const getEnrollments = () =>
+  request('/enrollments').then((payload) =>
+    extractCollection(payload).map((enrollment) => enrollment.course_id ?? enrollment.courseId),
+  )
+export const enroll = (courseId) =>
+  request('/enrollments', { method: 'POST', body: JSON.stringify({ course_id: courseId }) })
 export const unenroll = (courseId) => request(`/enrollments/${courseId}`, { method: 'DELETE' })
 
 export const getCategories = () => request('/categories').then(extractCollection)
-export const createCategory = (data) => request('/categories', { method: 'POST', body: JSON.stringify(data) })
-export const updateCategory = (id, data) => request(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+export const createCategory = (data) =>
+  request('/categories', { method: 'POST', body: JSON.stringify(data) })
+export const updateCategory = (id, data) =>
+  request(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) })
 export const deleteCategory = (id) => request(`/categories/${id}`, { method: 'DELETE' })
 
 export const getAuditLogs = (params = {}) => {
@@ -191,7 +217,8 @@ export const getAuditLogs = (params = {}) => {
 }
 export const getEmailJobs = () => request('/admin/jobs/email')
 export const getMaintenanceJobs = () => request('/admin/jobs/maintenance')
-export const triggerCourseDailyStats = () => request('/admin/jobs/course-daily-stats', { method: 'POST' })
+export const triggerCourseDailyStats = () =>
+  request('/admin/jobs/course-daily-stats', { method: 'POST' })
 
 function normalizeCoursePayload(data) {
   return {

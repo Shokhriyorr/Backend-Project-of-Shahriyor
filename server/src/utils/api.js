@@ -41,11 +41,11 @@ export function toAuditJson(value) {
     return null
   }
 
-  return JSON.parse(JSON.stringify(value, (_, currentValue) => (
-    typeof currentValue === 'bigint'
-      ? currentValue.toString()
-      : currentValue
-  )))
+  return JSON.parse(
+    JSON.stringify(value, (_, currentValue) =>
+      typeof currentValue === 'bigint' ? currentValue.toString() : currentValue,
+    ),
+  )
 }
 
 export function buildErrorBody(req, error) {

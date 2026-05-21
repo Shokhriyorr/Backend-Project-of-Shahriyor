@@ -25,12 +25,13 @@ async function appendEmailLog(message) {
 
 function getSmtpTransport() {
   if (!smtpTransport) {
-    const auth = env.SMTP_USER || env.SMTP_PASS
-      ? {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS,
-      }
-      : undefined
+    const auth =
+      env.SMTP_USER || env.SMTP_PASS
+        ? {
+            user: env.SMTP_USER,
+            pass: env.SMTP_PASS,
+          }
+        : undefined
 
     smtpTransport = nodemailer.createTransport({
       host: env.SMTP_HOST,

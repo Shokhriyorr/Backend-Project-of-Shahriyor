@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import { ApiError } from '../../src/utils/api.js'
+import { ApiError } from '../../server/src/utils/api.js'
 
 describe('enrollment service guards', () => {
   it('rejects enrollment into unpublished courses', async () => {
@@ -17,7 +17,7 @@ describe('enrollment service guards', () => {
       },
     }
 
-    jest.unstable_mockModule('../../src/prisma.js', () => ({
+    jest.unstable_mockModule('../../server/src/prisma.js', () => ({
       Prisma: {
         PrismaClientKnownRequestError: class PrismaClientKnownRequestError extends Error {},
         TransactionIsolationLevel: {
@@ -29,22 +29,24 @@ describe('enrollment service guards', () => {
       },
     }))
 
-    jest.unstable_mockModule('../../src/services/auditService.js', () => ({
+    jest.unstable_mockModule('../../server/src/services/auditService.js', () => ({
       appendAuditLog: jest.fn(),
     }))
 
-    jest.unstable_mockModule('../../src/services/notificationService.js', () => ({
+    jest.unstable_mockModule('../../server/src/services/notificationService.js', () => ({
       queueEnrollmentCreatedEmail: jest.fn(),
       queueEnrollmentCancelledEmail: jest.fn(),
     }))
 
-    const { createEnrollment } = await import('../../src/services/enrollmentService.js')
+    const { createEnrollment } = await import('../../server/src/services/enrollmentService.js')
 
-    await expect(createEnrollment({
-      req: { headers: {} },
-      userId: 2n,
-      courseId: 1n,
-    })).rejects.toMatchObject({
+    await expect(
+      createEnrollment({
+        req: { headers: {} },
+        userId: 2n,
+        courseId: 1n,
+      }),
+    ).rejects.toMatchObject({
       status: 409,
       message: 'Only published courses can accept enrollments.',
     })

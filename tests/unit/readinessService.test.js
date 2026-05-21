@@ -16,7 +16,7 @@ describe('readiness service', () => {
     const findFirst = jest.fn().mockResolvedValue(null)
     const getRedisConnection = jest.fn()
 
-    jest.unstable_mockModule('../../src/prisma.js', () => ({
+    jest.unstable_mockModule('../../server/src/prisma.js', () => ({
       default: {
         user: {
           findFirst,
@@ -24,13 +24,13 @@ describe('readiness service', () => {
       },
     }))
 
-    jest.unstable_mockModule('../../src/queues/redis.js', () => ({
+    jest.unstable_mockModule('../../server/src/queues/redis.js', () => ({
       getRedisConnection,
     }))
 
     process.env.ENABLE_BACKGROUND_WORKERS = 'false'
 
-    const { buildReadinessSnapshot } = await import('../../src/services/readinessService.js')
+    const { buildReadinessSnapshot } = await import('../../server/src/services/readinessService.js')
     const snapshot = await buildReadinessSnapshot()
 
     expect(snapshot.ok).toBe(true)
@@ -47,7 +47,7 @@ describe('readiness service', () => {
     const findFirst = jest.fn().mockResolvedValue(null)
     const ping = jest.fn().mockResolvedValue('PONG')
 
-    jest.unstable_mockModule('../../src/prisma.js', () => ({
+    jest.unstable_mockModule('../../server/src/prisma.js', () => ({
       default: {
         user: {
           findFirst,
@@ -55,7 +55,7 @@ describe('readiness service', () => {
       },
     }))
 
-    jest.unstable_mockModule('../../src/queues/redis.js', () => ({
+    jest.unstable_mockModule('../../server/src/queues/redis.js', () => ({
       getRedisConnection: jest.fn(() => ({
         ping,
       })),
@@ -64,7 +64,7 @@ describe('readiness service', () => {
     process.env.ENABLE_BACKGROUND_WORKERS = 'true'
     process.env.REDIS_URL = 'redis://127.0.0.1:6379'
 
-    const { buildReadinessSnapshot } = await import('../../src/services/readinessService.js')
+    const { buildReadinessSnapshot } = await import('../../server/src/services/readinessService.js')
     const snapshot = await buildReadinessSnapshot()
 
     expect(snapshot.ok).toBe(true)
@@ -73,7 +73,7 @@ describe('readiness service', () => {
   })
 
   test('marks readiness as failed when a dependency check fails', async () => {
-    jest.unstable_mockModule('../../src/prisma.js', () => ({
+    jest.unstable_mockModule('../../server/src/prisma.js', () => ({
       default: {
         user: {
           findFirst: jest.fn().mockRejectedValue(new Error('database unavailable')),
@@ -81,13 +81,13 @@ describe('readiness service', () => {
       },
     }))
 
-    jest.unstable_mockModule('../../src/queues/redis.js', () => ({
+    jest.unstable_mockModule('../../server/src/queues/redis.js', () => ({
       getRedisConnection: jest.fn(),
     }))
 
     process.env.ENABLE_BACKGROUND_WORKERS = 'false'
 
-    const { buildReadinessSnapshot } = await import('../../src/services/readinessService.js')
+    const { buildReadinessSnapshot } = await import('../../server/src/services/readinessService.js')
     const snapshot = await buildReadinessSnapshot()
 
     expect(snapshot.ok).toBe(false)

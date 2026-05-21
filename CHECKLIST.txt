@@ -10,7 +10,7 @@ Academy Portal - Final Submission Checklist
 [x] .env.example documents all required variables
 [x] CHECKLIST.txt present
 [x] CHANGELOG.md present
-[x] DEFENSE_SCRIPT.md present for oral defense
+[x] docs/defense-script.md present for oral defense
 [x] Postman collection present in postman/
 [x] Auth lifecycle implemented (register, verify, login, refresh, logout, reset)
 [x] RBAC enforced (student/admin)

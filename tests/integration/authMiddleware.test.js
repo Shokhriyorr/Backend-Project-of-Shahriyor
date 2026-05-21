@@ -9,8 +9,8 @@ describe('auth middleware integration', () => {
   })
 
   async function buildProtectedApp() {
-    const { requireAuth, requireRole } = await import('../../src/middleware/auth.js')
-    const { errorHandler, requestIdMiddleware } = await import('../../src/utils/api.js')
+    const { requireAuth, requireRole } = await import('../../server/src/middleware/auth.js')
+    const { errorHandler, requestIdMiddleware } = await import('../../server/src/utils/api.js')
     const app = express()
 
     app.use(requestIdMiddleware)
@@ -26,23 +26,25 @@ describe('auth middleware integration', () => {
   }
 
   function signAccessToken(payload) {
-    return jwt.sign({
-      sub: '10',
-      email: 'student@academy.dev',
-      role: 'student',
-      type: 'access',
-      ...payload,
-    }, process.env.JWT_SECRET, {
-      expiresIn: 900,
-    })
+    return jwt.sign(
+      {
+        sub: '10',
+        email: 'student@academy.dev',
+        role: 'student',
+        type: 'access',
+        ...payload,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 900,
+      },
+    )
   }
 
   test('rejects protected routes without bearer token', async () => {
     const app = await buildProtectedApp()
 
-    const response = await request(app)
-      .get('/protected')
-      .expect(401)
+    const response = await request(app).get('/protected').expect(401)
 
     expect(response.body.error.code).toBe('unauthorized')
   })

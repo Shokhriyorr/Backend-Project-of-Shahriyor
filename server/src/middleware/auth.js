@@ -19,9 +19,14 @@ function verifyAccessToken(token) {
     }
 
     if (payload.email_verified !== true) {
-      throw new ApiError(403, 'forbidden', 'Email verification is required before accessing protected routes.', {
-        verification_required: true,
-      })
+      throw new ApiError(
+        403,
+        'forbidden',
+        'Email verification is required before accessing protected routes.',
+        {
+          verification_required: true,
+        },
+      )
     }
 
     return {
@@ -76,9 +81,11 @@ export function requireRole(...roles) {
     }
 
     if (!roles.includes(req.user.role)) {
-      return next(new ApiError(403, 'forbidden', 'You do not have permission to perform this action.', {
-        required_roles: roles,
-      }))
+      return next(
+        new ApiError(403, 'forbidden', 'You do not have permission to perform this action.', {
+          required_roles: roles,
+        }),
+      )
     }
 
     return next()

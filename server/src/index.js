@@ -1,6 +1,9 @@
 import app from './app.js'
 import { env } from './config/env.js'
-import { startCourseDailyStatsScheduler, stopCourseDailyStatsScheduler } from './jobs/courseDailyStats.js'
+import {
+  startCourseDailyStatsScheduler,
+  stopCourseDailyStatsScheduler,
+} from './jobs/courseDailyStats.js'
 import { disconnectPrisma } from './prisma.js'
 import { closeEmailQueue } from './queues/emailQueue.js'
 import { closeMaintenanceQueue, ensureMaintenanceSchedules } from './queues/maintenanceQueue.js'

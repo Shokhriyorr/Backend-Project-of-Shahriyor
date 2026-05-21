@@ -13,12 +13,16 @@ export function startEmailWorker() {
 
   const connection = getRedisConnection()
 
-  worker = new Worker(env.EMAIL_QUEUE_NAME, async (job) => {
-    return sendEmailNow(job.data)
-  }, {
-    connection,
-    concurrency: 5,
-  })
+  worker = new Worker(
+    env.EMAIL_QUEUE_NAME,
+    async (job) => {
+      return sendEmailNow(job.data)
+    },
+    {
+      connection,
+      concurrency: 5,
+    },
+  )
 
   queueEvents = new QueueEvents(env.EMAIL_QUEUE_NAME, {
     connection,

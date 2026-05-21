@@ -4,7 +4,7 @@ import * as api from '../api.js'
 import { clearUser } from '../store/authSlice.js'
 
 function getRoleLabel(role) {
-  if (role === 'admin')   return 'Admin'
+  if (role === 'admin') return 'Admin'
   if (role === 'student') return 'Student'
   return 'Guest'
 }
@@ -13,7 +13,7 @@ export default function Navbar() {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.auth.user)
 
-  const isAdmin   = user?.role === 'admin'
+  const isAdmin = user?.role === 'admin'
   const isStudent = user?.role === 'student'
 
   return (
@@ -30,7 +30,7 @@ export default function Navbar() {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/courses">Courses</NavLink>
         {isStudent && <NavLink to="/my-courses">My Courses</NavLink>}
-        {isAdmin   && <NavLink to="/admin">Admin</NavLink>}
+        {isAdmin && <NavLink to="/admin">Admin</NavLink>}
         {user && <NavLink to="/account">Account</NavLink>}
       </nav>
 

@@ -1,0 +1,16 @@
+.git
+.vscode
+node_modules
+dist
+coverage
+
+SERVER_STABLE
+FRONT-4
+FinalProject_Specs
+
+*.log
+package-lock.json
+server/package-lock.json
+frontend/package-lock.json
+openapi.yaml
+server/openapi.yaml

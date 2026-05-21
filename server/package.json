@@ -8,6 +8,7 @@
     "start": "node src/index.js",
     "worker": "node src/worker.js",
     "lint": "node scripts/lint.js",
+    "pretest": "npm run prisma:generate",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
     "prisma:generate": "node ./node_modules/prisma/build/index.js generate",
     "prisma:migrate": "node ./node_modules/prisma/build/index.js migrate dev",
@@ -30,7 +31,6 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.5.0",
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.7",
@@ -42,8 +42,9 @@
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "prisma": "^7.6.0",
-    "supertest": "^7.2.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.2"
+    "supertest": "^7.2.2"
+  },
+  "overrides": {
+    "@hono/node-server": "^1.19.13"
   }
 }

@@ -1,0 +1,229 @@
+ACADEMY PORTAL
+architecture.txt
+
+1. System Design Overview
+
+Academy Portal is designed as a full-stack web application with a React client and an Express.js API. The API owns all authentication, authorization, catalog management, and enrollment rules. PostgreSQL is the system of record. Prisma ORM is the only data-access layer used by the application code. No raw SQL is used in request handlers or services.
+
+Primary architectural goals:
+- Keep public catalog reads fast
+- Keep enrollment writes ACID-safe
+- Separate transport, business logic, and persistence concerns
+- Make the backend easy to test and extend
+- Enforce admin/student authorization consistently
+
+High-level runtime flow:
+
+React Client
+    |
+    v
+Express API
+    |
+    +--> Middleware layer: auth, RBAC, validation, rate limiting, error handling
+    |
+    +--> Service layer: auth, courses, categories, teachers, enrollments, analytics
+    |
+    +--> Prisma ORM
+    |
+    v
+PostgreSQL 15+
+
+Optional sidecars:
+- Redis for rate limiting, hot catalog cache, and lock coordination
+- Cron worker for daily enrollment rollups and session cleanup
+
+2. Tech Stack Table
+
+| Layer | Choice | Reason |
+| --- | --- | --- |
+| Frontend | React 18 + Vite | Fast local development and clean SPA routing for catalog/auth pages |
+| API Framework | Express.js 5 | Minimal HTTP layer, clear middleware model, fits existing project |
+| Runtime | Node.js 20 LTS | Good long-term support and strong async I/O performance |
+| Database | PostgreSQL 15+ | ACID guarantees, strong indexing, good fit for relational catalog/enrollment data |
+| ORM | Prisma 7 | Type-safe data access, migrations, relations, validation-friendly workflow |
+| Auth | JWT access token + bcryptjs | Simple stateless auth for SPA + secure password hashing |
+| Config | dotenv + startup validation | Prevents missing or malformed env values from reaching runtime |
+| Cache | Redis | Rate limiting, hot lookups, and optional short-lived concurrency coordination |
+| Background Jobs | node-cron or worker process | Daily analytics rollups and cleanup tasks |
+| Testing | Vitest/Jest + Supertest | API contract, service, and integration testing |
+
+3. Why Express + Node Async Fits This Workload
+
+This backend is mostly I/O-bound:
+- many catalog reads
+- short auth requests
+- small CRUD writes
+- enrollment transactions touching a small set of rows
+
+Node's event loop is a good fit because the API spends most of its time waiting on PostgreSQL or Redis rather than doing CPU-heavy computation. The only CPU-sensitive step is password hashing, which remains acceptable at this scale and can later be moved behind worker threads or a separate auth service if needed.
+
+4. Proposed Backend Module Boundaries
+
+4.1 Auth Module
+- Register
+- Login
+- Current-user lookup
+- JWT issue/verify
+- Session revocation and refresh-token storage
+
+4.2 Courses Module
+- Public listing with cursor pagination
+- Course detail page
+- Admin create/update/publish/archive/delete
+- Enrollment count exposure for admin dashboards
+
+4.3 Categories Module
+- Category CRUD
+- Safe delete protection
+- Filter source for catalog pages
+
+4.4 Teachers Module
+- Teacher CRUD
+- Safe delete protection
+- Public profile data attached to course responses
+
+4.5 Enrollments Module
+- Current-user enrollment listing
+- Enroll and unenroll transactions
+- Ownership checks
+- Conflict handling
+
+4.6 Analytics Module
+- Daily enrollment rollups
+- Admin summary endpoints
+
+4.7 Audit Module
+- Append-only record of all admin mutations and security-sensitive actions
+
+5. Target Folder Structure
+
+academy-portal/
+|-- client/
+|   |-- src/
+|   |   |-- api/
+|   |   |-- app/
+|   |   |-- components/
+|   |   |-- pages/
+|   |   |-- store/
+|   |   `-- styles/
+|   |-- package.json
+|   `-- vite.config.js
+|-- server/
+|   |-- prisma/
+|   |   |-- migrations/
+|   |   |-- seeds/
+|   |   `-- schema.prisma
+|   |-- src/
+|   |   |-- config/
+|   |   |-- db/
+|   |   |-- jobs/
+|   |   |-- middleware/
+|   |   |-- modules/
+|   |   |   |-- auth/
+|   |   |   |-- users/
+|   |   |   |-- courses/
+|   |   |   |-- categories/
+|   |   |   |-- teachers/
+|   |   |   |-- enrollments/
+|   |   |   |-- analytics/
+|   |   |   `-- audit/
+|   |   |-- utils/
+|   |   |-- app.js
+|   |   `-- server.js
+|   |-- tests/
+|   |   |-- integration/
+|   |   `-- unit/
+|   |-- .env.example
+|   |-- package.json
+|   `-- README.md
+|-- docs/
+|   `-- docs/blueprint/
+|-- package.json
+`-- README.md
+
+Why this structure:
+- modules/ groups code by business domain instead of by file type only
+- middleware/ centralizes cross-cutting concerns
+- db/ isolates Prisma setup and transaction helpers
+- jobs/ keeps scheduled work separate from HTTP handlers
+- tests/ mirrors runtime responsibilities
+
+6. Environment Strategy
+
+6.1 Files
+- .env.example: required variable names with safe placeholder values
+- .env.development: local development values
+- .env.test: isolated test database values
+- .env.production: production secrets injected by deployment platform
+
+6.2 Required environment variables
+- NODE_ENV
+- PORT
+- DATABASE_URL
+- JWT_SECRET_CURRENT
+- JWT_SECRET_PREVIOUS
+- ACCESS_TOKEN_TTL
+- REFRESH_TOKEN_TTL
+- REDIS_URL
+- CORS_ORIGIN
+- BCRYPT_ROUNDS
+
+6.3 Validation approach
+
+At process startup:
+1. Load environment with dotenv.
+2. Validate every required variable with a schema validator.
+3. Fail fast before Express starts listening if any variable is missing or malformed.
+
+Validation rules:
+- PORT must be an integer
+- DATABASE_URL must be a PostgreSQL URL
+- JWT secrets must be non-empty and minimum-length protected
+- CORS_ORIGIN must be a valid URL
+- BCRYPT_ROUNDS must be within an allowed numeric range
+
+Why validation matters:
+- prevents silent boot with broken config
+- avoids hidden runtime failures in production
+- gives deterministic startup behavior in all environments
+
+7. Cache and Redis Strategy
+
+Redis is not the source of truth. PostgreSQL remains authoritative.
+
+Redis use-cases:
+- Token-bucket rate limiting for auth endpoints
+- Short TTL cache for category and teacher lists
+- Short TTL cache for first catalog page under common filters
+- Optional lock key for very hot enrollment races on the same course
+
+Recommended cache policy:
+- categories list: 5 minutes
+- teachers list: 5 minutes
+- course list first page: 30-60 seconds
+- auth rate limit counters: 1-15 minutes depending on endpoint
+
+8. Transaction Strategy
+
+ACID transactions are mandatory for enrollment writes because they modify two logical facts:
+- the enrollment record
+- the course seat counter
+
+The backend will use Prisma transactions for:
+- enroll
+- unenroll
+- publication state changes that update audit logs together with the main entity
+- destructive admin operations that require pre-checks and logging
+
+9. Deployment and Operational Notes
+
+- Run behind a reverse proxy or cloud load balancer
+- Terminate TLS before the Node process
+- Use managed PostgreSQL with PITR enabled
+- Run prisma migrate deploy during release
+- Store secrets in deployment platform secret manager, not in git
+- Emit structured JSON logs with request_id correlation
+
+10. Justification Summary
+
+This architecture is intentionally simple but production-aware. It matches the current project stack, preserves Prisma as the only ORM layer, and adds the missing structure needed for a final project: RBAC, validation, transactions, audit logging, background jobs, and scalable pagination.

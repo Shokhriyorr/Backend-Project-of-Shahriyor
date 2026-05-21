@@ -48,10 +48,7 @@ async function settleCheck(check) {
 }
 
 export async function buildReadinessSnapshot() {
-  const [database, redis] = await Promise.all([
-    settleCheck(checkDatabase),
-    settleCheck(checkRedis),
-  ])
+  const [database, redis] = await Promise.all([settleCheck(checkDatabase), settleCheck(checkRedis)])
 
   const checks = {
     database,

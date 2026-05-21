@@ -1,14 +1,9 @@
 import { getClientIp, toAuditJson } from '../utils/api.js'
 
-export async function appendAuditLog(tx, {
-  req,
-  actorUserId = null,
-  entityType,
-  entityId,
-  action,
-  before = null,
-  after = null,
-}) {
+export async function appendAuditLog(
+  tx,
+  { req, actorUserId = null, entityType, entityId, action, before = null, after = null },
+) {
   return tx.auditLog.create({
     data: {
       actorUserId: actorUserId ? BigInt(actorUserId) : null,

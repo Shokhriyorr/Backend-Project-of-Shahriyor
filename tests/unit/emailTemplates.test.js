@@ -6,7 +6,7 @@ import {
   buildPasswordResetEmail,
   buildPasswordChangedEmail,
   buildVerificationEmail,
-} from '../../src/services/emailTemplates.js'
+} from '../../server/src/services/emailTemplates.js'
 
 describe('email templates', () => {
   const user = {
@@ -43,9 +43,15 @@ describe('email templates', () => {
   })
 
   test('builds business notification emails', () => {
-    expect(buildEnrollmentConfirmationEmail({ user, enrollment }).metadata.event).toBe('business.enrollment_created')
-    expect(buildEnrollmentCancelledEmail({ user, enrollment }).metadata.event).toBe('business.enrollment_cancelled')
-    expect(buildCoursePublishedEmail({ to: 'admin@academy.dev', course }).metadata.event).toBe('business.course_published')
+    expect(buildEnrollmentConfirmationEmail({ user, enrollment }).metadata.event).toBe(
+      'business.enrollment_created',
+    )
+    expect(buildEnrollmentCancelledEmail({ user, enrollment }).metadata.event).toBe(
+      'business.enrollment_cancelled',
+    )
+    expect(buildCoursePublishedEmail({ to: 'admin@academy.dev', course }).metadata.event).toBe(
+      'business.course_published',
+    )
   })
 
   test('builds account security notification emails', () => {

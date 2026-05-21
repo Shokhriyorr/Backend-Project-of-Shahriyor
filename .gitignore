@@ -3,6 +3,10 @@ coverage/
 dist/
 *.log
 
+FRONT-4/
+SERVER_STABLE/
+FinalProject_Specs/
+
 .env
 .env.*
 !.env.example

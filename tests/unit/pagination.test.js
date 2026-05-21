@@ -1,11 +1,11 @@
-import { ApiError } from '../../src/utils/api.js'
+import { ApiError } from '../../server/src/utils/api.js'
 import {
   buildCreatedAtCursorFilter,
   encodeCursor,
   makeCreatedAtCursor,
   pageResponse,
   parseLimit,
-} from '../../src/utils/pagination.js'
+} from '../../server/src/utils/pagination.js'
 
 describe('pagination helpers', () => {
   test('uses default limit and rejects unsafe limits', () => {

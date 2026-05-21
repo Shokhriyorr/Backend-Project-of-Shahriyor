@@ -14,7 +14,14 @@ export function validateBody(schema) {
     const result = v.safeParse(schema, req.body)
 
     if (!result.success) {
-      return next(new ApiError(422, 'unprocessable_entity', 'Request body validation failed.', issuesToDetails(result.issues)))
+      return next(
+        new ApiError(
+          422,
+          'unprocessable_entity',
+          'Request body validation failed.',
+          issuesToDetails(result.issues),
+        ),
+      )
     }
 
     req.body = result.output

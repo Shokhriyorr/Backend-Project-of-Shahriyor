@@ -53,21 +53,23 @@ export default function VerifyEmail() {
       </section>
 
       <div className="card form-card">
-        {status === 'verifying' && (
-          <div className="message-banner">Verifying your email...</div>
-        )}
+        {status === 'verifying' && <div className="message-banner">Verifying your email...</div>}
 
         {status === 'success' && (
           <div className="message-banner success">
             {message}
-            <p><Link to="/login">Click here to log in</Link></p>
+            <p>
+              <Link to="/login">Click here to log in</Link>
+            </p>
           </div>
         )}
 
         {status === 'error' && (
           <div className="message-banner">
             {message}
-            <p><Link to="/login">Back to login</Link></p>
+            <p>
+              <Link to="/login">Back to login</Link>
+            </p>
           </div>
         )}
       </div>
