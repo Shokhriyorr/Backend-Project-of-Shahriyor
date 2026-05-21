@@ -6,7 +6,7 @@
 |-------|-------|
 | `worker` build failed / no web listeners | DeployRocks read a compose file with the local-only worker service |
 | `No web listeners specified` | The platform needs explicit `ports` entries for web apps |
-| `Network ... does not exist` | Dokku tried to attach apps to a shared network before it was declared/created |
+| `Network ... does not exist` | Dokku tried to attach separate apps to a shared network that DeployRocks did not create |
 | `PASSWORD_RESET_TTL_MINUTES` random value | Platform auto-generated secrets for **numeric** env vars - you must set them manually |
 
 ## Fix (10 minutes)
@@ -21,15 +21,16 @@ compose.deployrocks.yaml
 
 `docker-compose.yml` is also safe now, but setting the explicit file keeps the dashboard clear.
 
-Both deploy compose files deploy only **api + frontend** with explicit web ports and the Dokku network name. Workers run inside **api** (`START_WORKERS_IN_API=true`). Postgres and Redis are created by the platform.
+Both deploy compose files now deploy **one web app**: nginx serves the frontend and proxies to the API inside the same container. This avoids the broken cross-app Dokku network. Workers run inside the same app (`START_WORKERS_IN_API=true`). Postgres and Redis are created/linked by the platform.
 
-### 2. Delete failed worker app (if it exists)
+### 2. Delete failed old apps (if they exist)
 
-In DeployRocks / Dokku apps list, remove:
+In DeployRocks / Dokku apps list, remove old failed separate apps:
 
+`shokhriyorr-backend-project-of-shahriyor-api`
 `shokhriyorr-backend-project-of-shahriyor-worker`
 
-You do not need a separate worker app.
+You only need the frontend app now; it contains frontend + API + workers.
 
 ### 3. Fix environment variables manually
 
@@ -45,8 +46,6 @@ JWT_REFRESH_TTL_DAYS=30
 START_WORKERS_IN_API=true
 ENABLE_BACKGROUND_WORKERS=true
 EMAIL_PROVIDER=smtp
-DEPLOYROCKS_PROJECT_NAME=shokhriyorr-backend-project-of-shahriyor
-DEPLOYROCKS_API_HOST=shokhriyorr-backend-project-of-shahriyor-api.web
 ```
 
 Use your real SMTP, JWT, and URLs. **Delete** wrong auto-generated entries for `PASSWORD_RESET_TTL_MINUTES` if they look like random secrets.
@@ -62,7 +61,7 @@ Do **not** set `DATABASE_URL` or `REDIS_URL` yourself unless the dashboard shows
 
 ### 4. Redeploy
 
-Click **Retry deploy**. Order should be: api -> frontend (both green).
+Click **Retry deploy**. The dashboard should deploy only `frontend` as the web app.
 
 ### 5. Smoke test
 

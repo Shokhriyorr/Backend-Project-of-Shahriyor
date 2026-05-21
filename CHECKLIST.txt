@@ -27,7 +27,7 @@ Academy Portal - Final Submission Checklist
 
 [ ] Application is LIVE on dashboard.deployrocks.com or Render (see DEPLOY-NOW.txt)
 [ ] DEPLOYED_URL.txt contains the final public frontend URL
-[x] compose.deployrocks.yaml + deployrocks.env.example ready for platform
+[x] compose.deployrocks.yaml + deployrocks.env.example ready for single-app DeployRocks
 [ ] VIDEO_LINK.txt contains the defense recording URL
 [ ] Production secrets configured (JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, EMAIL_API_KEY/SMTP_PASS, CORS_ORIGINS)
 [ ] Real SMTP inbox demonstrated on deployed environment (EMAIL_PROVIDER=smtp)
@@ -41,7 +41,7 @@ Local full stack from .env.example:
   Frontend: http://localhost:8080
   Swagger:  http://localhost:8080/docs
 
-DeployRocks compose file: compose.deployrocks.yaml (see DEPLOY-NOW.txt)
+DeployRocks compose file: compose.deployrocks.yaml (single web app; see DEPLOY-NOW.txt)
 
 Local production overlay (SMTP):
   docker compose -f docker-compose.local.yml -f docker-compose.prod.yml up --build

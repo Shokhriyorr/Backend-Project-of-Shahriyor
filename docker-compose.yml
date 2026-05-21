@@ -1,21 +1,23 @@
 # Default compose file for DeployRocks / Kazi.rocks.
-# Keep this file api + frontend only: the platform provides Postgres and Redis,
-# and workers run inside api via START_WORKERS_IN_API=true.
+# One web app only: nginx frontend + API + background workers in the same container.
 # Local full stack: docker compose -f docker-compose.local.yml up --build
 
-name: ${DEPLOYROCKS_PROJECT_NAME:-shokhriyorr-backend-project-of-shahriyor}
-
 services:
-  api:
+  frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.deployrocks
+      args:
+        VITE_API_BASE: /api
     restart: unless-stopped
+    network_mode: bridge
     environment:
       NODE_ENV: production
       ENVIRONMENT: production
-      PORT: 5000
+      PORT: 80
       BACKEND_PORT: 5000
+      API_HOST: 127.0.0.1
+      API_PORT: 5000
       START_WORKERS_IN_API: 'true'
       ENABLE_BACKGROUND_WORKERS: 'true'
       ENABLE_DAILY_STATS_JOB: 'true'
@@ -42,7 +44,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-AdminPass123!}
       ADMIN_NAME: ${ADMIN_NAME:-Academy Admin}
     ports:
-      - '5000:5000'
+      - '80:80'
     healthcheck:
       test:
         [
@@ -50,40 +52,9 @@ services:
           'node',
           '--input-type=module',
           '-e',
-          "const r=await fetch('http://127.0.0.1:5000/health');process.exit(r.ok?0:1)",
+          "const r=await fetch('http://127.0.0.1/health');process.exit(r.ok?0:1)",
         ]
       interval: 15s
       timeout: 5s
       retries: 8
       start_period: 60s
-    networks:
-      - deployrocks
-    command: >
-      sh -c "npm run prisma:deploy &&
-             npm run seed:admin &&
-             npm run seed:demo &&
-             node src/index.js"
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_BASE: /api
-    restart: unless-stopped
-    depends_on:
-      api:
-        condition: service_healthy
-    environment:
-      API_HOST: ${DEPLOYROCKS_API_HOST:-shokhriyorr-backend-project-of-shahriyor-api.web}
-      API_PORT: 5000
-      PORT: 80
-    ports:
-      - '80:80'
-    networks:
-      - deployrocks
-
-networks:
-  deployrocks:
-    name: ${DEPLOYROCKS_PROJECT_NAME:-shokhriyorr-backend-project-of-shahriyor}-net
-    driver: bridge

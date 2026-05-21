@@ -19,9 +19,10 @@ Academy Portal - DeployRocks (5 minutes)
 
    Do NOT override DATABASE_URL / REDIS_URL unless the dashboard shows them empty.
 
-4) Remove failed separate "worker" app if it exists (workers run inside api).
+4) Remove failed old separate "api" and "worker" apps if they exist.
+   The frontend app now contains frontend + API + workers.
 
-5) Retry deploy -> wait until api + frontend = Live
+5) Retry deploy -> wait until frontend = Live
 
 6) Smoke test (same host as frontend):
 

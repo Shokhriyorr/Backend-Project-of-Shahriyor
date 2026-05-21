@@ -4,7 +4,7 @@
 
 1. Push the latest `main` branch to GitHub.
 2. Sign in at [dashboard.deployrocks.com](https://dashboard.deployrocks.com) and connect the repository.
-3. Choose **Docker Compose** deployment and set the compose file to **`compose.deployrocks.yaml`**. The root `docker-compose.yml` has the same DeployRocks-safe api + frontend shape in case the dashboard falls back to the default file.
+3. Choose **Docker Compose** deployment and set the compose file to **`compose.deployrocks.yaml`**. The root `docker-compose.yml` has the same DeployRocks-safe single web app shape in case the dashboard falls back to the default file.
 4. If a deploy failed before, read **`docs/deployment/deployrocks-fix.md`**.
 5. Set environment variables in the platform dashboard (do not commit secrets):
 
@@ -12,8 +12,6 @@
 |----------|---------|
 | `ENVIRONMENT` | `production` |
 | `NODE_ENV` | `production` |
-| `DEPLOYROCKS_PROJECT_NAME` | `shokhriyorr-backend-project-of-shahriyor` |
-| `DEPLOYROCKS_API_HOST` | `shokhriyorr-backend-project-of-shahriyor-api.web` |
 | `JWT_SECRET_KEY` | 32+ random chars |
 | `JWT_REFRESH_SECRET_KEY` | different 32+ random chars |
 | `POSTGRES_PASSWORD` | strong password |
@@ -26,7 +24,7 @@
 | `CORS_ORIGINS` | `https://<your-frontend-domain>` |
 | `ADMIN_NOTIFICATION_EMAILS` | your inbox for course-published alerts |
 
-6. Deploy and wait until `api` and `frontend` are live, with platform Postgres/Redis healthy. Workers run inside `api` on DeployRocks.
+6. Deploy and wait until the `frontend` app is live, with platform Postgres/Redis linked. API routes and workers run inside the same container on DeployRocks.
 7. Copy the public frontend URL into `DEPLOYED_URL.txt` (first line only).
 8. Record the defense video against the deployed URL and update `VIDEO_LINK.txt`.
 
