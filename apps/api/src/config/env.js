@@ -7,6 +7,30 @@ if (process.env.NODE_ENV !== 'test') {
   loadEnv()
 }
 
+// DeployRocks sometimes auto-generates random "secrets" for numeric TTL vars.
+const NUMERIC_ENV_DEFAULTS = {
+  EMAIL_VERIFICATION_TTL_MINUTES: '1440',
+  PASSWORD_RESET_TTL_MINUTES: '30',
+  STATS_JOB_REPEAT_MS: '900000',
+  JWT_ACCESS_TTL_SECONDS: '900',
+  JWT_REFRESH_TTL_DAYS: '30',
+  SMTP_PORT: '587',
+}
+
+function sanitizeNumericEnvVars() {
+  for (const [key, fallback] of Object.entries(NUMERIC_ENV_DEFAULTS)) {
+    const value = process.env[key]
+    if (value !== undefined && !/^\d+$/.test(String(value).trim())) {
+      process.env[key] = fallback
+      console.warn(
+        `[env] ${key} must be numeric; DeployRocks auto-secret ignored, using ${fallback}.`,
+      )
+    }
+  }
+}
+
+sanitizeNumericEnvVars()
+
 const envSchema = v.object({
   NODE_ENV: v.optional(v.picklist(['development', 'test', 'production']), 'development'),
   ENVIRONMENT: v.optional(v.picklist(['development', 'test', 'production']), undefined),
