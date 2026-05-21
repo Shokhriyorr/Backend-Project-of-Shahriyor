@@ -81,6 +81,22 @@ describe('environment validation', () => {
     expect(env.JWT_REFRESH_SECRET).toBe('production-refresh-secret-with-enough-entropy-123456')
   })
 
+  test('disables production workers when Redis is not configured', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    setProductionEnv({
+      REDIS_URL: '',
+      ENABLE_BACKGROUND_WORKERS: 'true',
+    })
+
+    const { env } = await import('../../apps/api/src/config/env.js')
+
+    expect(env.ENABLE_BACKGROUND_WORKERS).toBe(false)
+    expect(env.REDIS_URL).toBe('')
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('background workers disabled'))
+
+    warnSpy.mockRestore()
+  })
+
   test('normalizes postgres:// database urls for Prisma', async () => {
     setProductionEnv({
       DATABASE_URL: 'postgres://postgres:secret@db:5432/academy_db',

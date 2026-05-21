@@ -136,7 +136,7 @@ if (!explicitRedisUrl && enableWorkers) {
   enableWorkers = false
   redisUrl = ''
   console.warn(
-    '[env] REDIS_URL is not set — background workers disabled. Add REDIS_URL in Environment (e.g. Upstash) to enable queues.',
+    '[env] REDIS_URL is not set - background workers disabled. Add REDIS_URL in Environment (e.g. Upstash) to enable queues.',
   )
 }
 

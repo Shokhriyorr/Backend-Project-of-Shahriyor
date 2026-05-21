@@ -14,10 +14,16 @@ Academy Portal - DeployRocks (5 minutes)
    Set PUBLIC_APP_URL and CORS_ORIGINS to your live domain, e.g.:
      https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 
-   Do NOT override DATABASE_URL / REDIS_URL unless the dashboard shows them empty.
+   Live-now settings:
+     ENABLE_BACKGROUND_WORKERS=false
+     START_WORKERS_IN_API=false
+     PASSWORD_RESET_TTL_MINUTES=30
+
+   Do NOT set REDIS_URL for the first deploy.
+   Do NOT override DATABASE_URL unless the dashboard shows it empty.
 
 4) If you created older failed apps, delete them and create/deploy the main app again.
-   The root Dockerfile now contains frontend + API + workers.
+   The root Dockerfile now contains frontend + API. Redis workers can be enabled later.
 
 5) Retry deploy -> wait until the main app = Live
 

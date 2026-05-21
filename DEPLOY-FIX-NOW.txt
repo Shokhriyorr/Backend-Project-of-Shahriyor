@@ -1,10 +1,16 @@
 LAST ERROR FIXED: Dockerfile line 73 had spaces in ENV (build failed).
 
 NOW:
-1. Click Retry deploy on DeployRocks (pulls latest GitHub main).
-2. After Live, open Environment and paste deployrocks.env.local.
-3. Set PASSWORD_RESET_TTL_MINUTES = 30  (delete the long random value if present).
-4. Retry deploy again.
+1. In DeployRocks Environment, set:
+   ENABLE_BACKGROUND_WORKERS=false
+   START_WORKERS_IN_API=false
+   PASSWORD_RESET_TTL_MINUTES=30
+2. Leave REDIS_URL unset for now.
+3. Make sure PostgreSQL is Linked, not Detached.
+4. Click Retry deploy on DeployRocks (pulls latest GitHub main).
+
+If the same REDIS_URL error appears, DeployRocks is using an older commit.
+Push a fresh commit to main and retry deploy again.
 
 SECURITY: Your GitHub token appeared in deploy logs. Revoke it:
   GitHub -> Settings -> Developer settings -> Personal access tokens -> revoke old token.
