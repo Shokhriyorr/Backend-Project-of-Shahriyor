@@ -1,4 +1,4 @@
-https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
+https://zero-reliance-shoot-barrier.trycloudflare.com
 
 Local smoke URLs (verified 2026-05-22):
 - Frontend: http://localhost:8080
