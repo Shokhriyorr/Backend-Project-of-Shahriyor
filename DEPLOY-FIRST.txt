@@ -1,0 +1,24 @@
+DeployRocks: "Deploy the app first before setting environment variables"
+======================================================================
+
+This is NORMAL. The dashboard unlocks Environment only AFTER the first deploy.
+
+ORDER (do exactly this):
+
+STEP 1 — Deploy WITHOUT Environment tab
+  - Do NOT open Environment yet (it will show that message).
+  - Click the purple button:  Retry deploy
+  - Wait until status is Live (or Failed — then Retry deploy once more).
+
+STEP 2 — THEN set Environment
+  - After deploy attempt, open tab Environment.
+  - Paste everything from:  deployrocks.env.local
+  - Replace SMTP_PASS and EMAIL_FROM_ADDRESS with your real Gmail.
+  - Fix PASSWORD_RESET_TTL_MINUTES = 30  (only digits).
+
+STEP 3 — Deploy again
+  - Click Retry deploy again so new variables apply.
+
+Check:
+  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health
+  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/docs

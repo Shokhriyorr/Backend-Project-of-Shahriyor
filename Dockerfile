@@ -54,11 +54,30 @@ COPY scripts/start-deployrocks.sh /usr/local/bin/start-deployrocks.sh
 RUN chmod +x /usr/local/bin/start-deployrocks.sh
 
 ENV NODE_ENV=production
+ENV ENVIRONMENT=production
 ENV PORT=80
 ENV BACKEND_PORT=5000
 ENV API_HOST=127.0.0.1
 ENV API_PORT=5000
 ENV DOCKER_BUILD=true
+# Bootstrap defaults for DeployRocks first deploy (before Environment tab unlocks).
+# Override these in the dashboard after the first Live deploy.
+ENV ENABLE_BACKGROUND_WORKERS=true
+ENV START_WORKERS_IN_API=true
+ENV ENABLE_DAILY_STATS_JOB=true
+ENV EMAIL_PROVIDER=smtp
+ENV SMTP_HOST=smtp.gmail.com
+ENV SMTP_PORT=587
+ENV SMTP_USER=bootstrap@deployrocks.local
+ENV SMTP_PASS=bootstrap-smtp-pass-change-in-dashboard
+ENV EMAIL_FROM_ADDRESS=Academy Portal <bootstrap@deployrocks.local>
+ENV PUBLIC_APP_URL=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
+ENV CORS_ORIGINS=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
+ENV EMAIL_VERIFICATION_TTL_MINUTES=1440
+ENV PASSWORD_RESET_TTL_MINUTES=30
+ENV STATS_JOB_REPEAT_MS=900000
+ENV JWT_ACCESS_TTL_SECONDS=900
+ENV JWT_REFRESH_TTL_DAYS=30
 
 EXPOSE 80
 
