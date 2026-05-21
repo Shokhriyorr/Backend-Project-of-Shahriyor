@@ -77,6 +77,15 @@ if (!parsedEnv.success) {
 
 const rawEnv = parsedEnv.output
 const nodeEnv = rawEnv.ENVIRONMENT ?? rawEnv.NODE_ENV
+
+function normalizeDatabaseUrl(url) {
+  const trimmed = url.trim()
+  if (trimmed.startsWith('postgres://')) {
+    return `postgresql://${trimmed.slice('postgres://'.length)}`
+  }
+
+  return trimmed
+}
 const jwtSecret = (rawEnv.JWT_SECRET_KEY || rawEnv.JWT_SECRET || '').trim()
 const jwtRefreshSecret = (
   rawEnv.JWT_REFRESH_SECRET_KEY || (nodeEnv === 'production' ? '' : jwtSecret)
@@ -186,7 +195,7 @@ if (nodeEnv === 'production') {
 export const env = {
   NODE_ENV: nodeEnv,
   PORT: port,
-  DATABASE_URL: rawEnv.DATABASE_URL,
+  DATABASE_URL: normalizeDatabaseUrl(rawEnv.DATABASE_URL),
   JWT_SECRET: jwtSecret,
   JWT_REFRESH_SECRET: jwtRefreshSecret,
   JWT_ACCESS_TTL_SECONDS: Number(rawEnv.JWT_ACCESS_TTL_SECONDS),

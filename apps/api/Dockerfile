@@ -16,6 +16,7 @@ ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/academy_db
 RUN npm run prisma:generate
 
 ENV NODE_ENV=production
-EXPOSE 3000
+ENV PORT=5000
+EXPOSE 5000
 
 CMD ["node", "src/index.js"]

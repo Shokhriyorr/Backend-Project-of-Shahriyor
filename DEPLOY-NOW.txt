@@ -1,0 +1,26 @@
+Academy Portal — DeployRocks за 5 минут
+=======================================
+
+1) Открой https://dashboard.deployrocks.com → свой проект → Settings
+
+2) Compose file (ОБЯЗАТЕЛЬНО):
+   compose.deployrocks.yaml
+
+3) Environment → вставь переменные из файла:
+   deployrocks.env.example
+   (SMTP_PASS и JWT замени на свои; сгенерировать JWT:
+    powershell -File scripts/generate-deploy-secrets.ps1)
+
+4) Удали failed app "worker" если есть в списке apps
+
+5) Retry deploy → жди api + frontend = Live
+
+6) Проверь в браузере:
+   https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health
+   https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/docs
+
+7) DEPLOYED_URL.txt — первая строка = твой URL → git push
+
+8) Запиши видео защиты → VIDEO_LINK.txt → git push
+
+Подробно: docs/deployment/deployrocks-fix.md

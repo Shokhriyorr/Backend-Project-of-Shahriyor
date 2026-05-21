@@ -40,8 +40,8 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@academy.dev}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-AdminPass123!}
       ADMIN_NAME: ${ADMIN_NAME:-Academy Admin}
-    expose:
-      - '5000'
+    ports:
+      - '5000:5000'
     healthcheck:
       test:
         [
@@ -67,6 +67,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE: /api
+    ports:
+      - '80:80'
     depends_on:
-      api:
-        condition: service_healthy
+      - api

@@ -80,4 +80,14 @@ describe('environment validation', () => {
     expect(env.ENABLE_BACKGROUND_WORKERS).toBe(true)
     expect(env.JWT_REFRESH_SECRET).toBe('production-refresh-secret-with-enough-entropy-123456')
   })
+
+  test('normalizes postgres:// database urls for Prisma', async () => {
+    setProductionEnv({
+      DATABASE_URL: 'postgres://postgres:secret@db:5432/academy_db',
+    })
+
+    const { env } = await import('../../apps/api/src/config/env.js')
+
+    expect(env.DATABASE_URL).toBe('postgresql://postgres:secret@db:5432/academy_db')
+  })
 })

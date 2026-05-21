@@ -25,8 +25,9 @@ Academy Portal - Final Submission Checklist
 [x] Production compose overlay documented in docker-compose.prod.yml
 [x] DeployRocks/Render guide present in docs/deployment/deployrocks.md
 
-[ ] Application is LIVE on dashboard.deployrocks.com or Render
-[ ] DEPLOYED_URL.txt contains the public frontend URL
+[ ] Application is LIVE on dashboard.deployrocks.com or Render (see DEPLOY-NOW.txt)
+[x] DEPLOYED_URL.txt contains the public frontend URL candidate
+[x] compose.deployrocks.yaml + deployrocks.env.example ready for platform
 [ ] VIDEO_LINK.txt contains the defense recording URL
 [ ] Production secrets configured (JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, EMAIL_API_KEY/SMTP_PASS, CORS_ORIGINS)
 [ ] Real SMTP inbox demonstrated on deployed environment (EMAIL_PROVIDER=smtp)

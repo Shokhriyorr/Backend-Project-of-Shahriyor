@@ -1,0 +1,5 @@
+# DeployRocks project hint — set this file in the dashboard if supported.
+compose_file: compose.deployrocks.yaml
+services:
+  - api
+  - frontend
