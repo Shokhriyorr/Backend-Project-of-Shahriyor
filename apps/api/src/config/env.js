@@ -126,27 +126,19 @@ const smtpUser = rawEnv.SMTP_USER || (rawEnv.EMAIL_API_KEY ? 'apikey' : '')
 const port = Number(rawEnv.BACKEND_PORT ?? rawEnv.PORT ?? 3000)
 const emailProvider = rawEnv.EMAIL_PROVIDER
 const smtpHost = rawEnv.SMTP_HOST.trim()
-const enableWorkers = rawEnv.ENABLE_BACKGROUND_WORKERS === 'true'
+let enableWorkers = rawEnv.ENABLE_BACKGROUND_WORKERS === 'true'
+const explicitRedisUrl = (rawEnv.REDIS_URL || '').trim()
+let redisUrl = explicitRedisUrl
 
-function resolveRedisUrl(raw) {
-  const trimmed = (raw || '').trim()
-  if (trimmed) {
-    return trimmed
-  }
-
-  const project = process.env.DEPLOYROCKS_PROJECT_NAME?.trim()
-  if (project) {
-    const host = `dokku-redis-${project}-redis`
-    console.warn(
-      `[env] REDIS_URL missing; using redis://${host}:6379 — add Redis in DeployRocks Databases if workers fail.`,
-    )
-    return `redis://${host}:6379`
-  }
-
-  return ''
+// DeployRocks Free often has Postgres only (no "Add Redis" button). Boot without workers
+// until REDIS_URL is set (Upstash URL in Environment or platform links Redis).
+if (!explicitRedisUrl && enableWorkers) {
+  enableWorkers = false
+  redisUrl = ''
+  console.warn(
+    '[env] REDIS_URL is not set — background workers disabled. Add REDIS_URL in Environment (e.g. Upstash) to enable queues.',
+  )
 }
-
-const redisUrl = resolveRedisUrl(rawEnv.REDIS_URL)
 
 if (jwtSecret.length < 32) {
   throw new Error(
@@ -191,12 +183,6 @@ if (emailProvider === 'smtp' && smtpPass.length === 0) {
   )
 }
 
-if (enableWorkers && redisUrl.length === 0) {
-  throw new Error(
-    'Environment validation failed:\n- REDIS_URL is required when ENABLE_BACKGROUND_WORKERS=true.',
-  )
-}
-
 if (nodeEnv === 'production') {
   const productionIssues = []
 
@@ -222,12 +208,12 @@ if (nodeEnv === 'production') {
     productionIssues.push('EMAIL_PROVIDER must be smtp in production.')
   }
 
-  if (redisUrl.length === 0) {
-    productionIssues.push('REDIS_URL is required in production.')
+  if (redisUrl.length === 0 && enableWorkers) {
+    productionIssues.push('REDIS_URL is required when ENABLE_BACKGROUND_WORKERS=true.')
   }
 
-  if (!enableWorkers) {
-    productionIssues.push('ENABLE_BACKGROUND_WORKERS must be true in production.')
+  if (!enableWorkers && explicitRedisUrl.length > 0) {
+    productionIssues.push('ENABLE_BACKGROUND_WORKERS must be true when REDIS_URL is configured.')
   }
 
   if (productionIssues.length) {

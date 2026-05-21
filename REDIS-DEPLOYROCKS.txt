@@ -1,11 +1,31 @@
-ERROR: REDIS_URL is required when ENABLE_BACKGROUND_WORKERS=true
+DeployRocks: NO "Add Redis" BUTTON (Free plan)
+=============================================
 
-FIX IN DEPLOYROCKS (2 minutes):
+This is OK for first deploy. The app will start WITHOUT background workers
+until you add REDIS_URL manually.
 
-1. Left menu -> Databases
-2. Click "Add Redis" / "New Redis" for project shahriyor
-   Name should be like: shokhriyorr-backend-project-of-shahriyor-redis
-3. Link Redis to your app (REDIS_URL must appear in Environment)
-4. Retry deploy
+STEP A — Link PostgreSQL (required)
+  Databases -> row ...-db (Detached)
+  -> click the row or "..." menu -> Link / Attach
+  -> choose "Backend Project Of Shahriyor"
+  -> STATUS must become Linked
 
-If REDIS_URL appears in Environment after linking, deploy should pass.
+STEP B — Retry deploy
+  Project -> Retry deploy -> wait for Live
+
+STEP C — Redis (choose ONE option)
+
+  Option 1 — Free Upstash (recommended, 5 min)
+    1. https://upstash.com -> free database -> copy Redis URL
+    2. DeployRocks -> Environment -> Add:
+         REDIS_URL=redis://default:XXXX@XXXX.upstash.io:6379
+         ENABLE_BACKGROUND_WORKERS=true
+         START_WORKERS_IN_API=true
+    3. Retry deploy
+
+  Option 2 — DeployRocks adds Redis later
+    If "Add Redis" appears after Postgres is Linked, create ...-redis and Link.
+
+  Option 3 — Defense demo
+    Show Redis locally: docker compose up (full stack with redis + worker)
+    Show live site on kazi.rocks for frontend/API (workers optional on cloud)
