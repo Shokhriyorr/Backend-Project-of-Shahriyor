@@ -3,11 +3,8 @@ Academy Portal - DeployRocks (5 minutes)
 
 1) Open https://dashboard.deployrocks.com -> your project -> Settings
 
-2) Compose file:
-
-   compose.deployrocks.yaml
-
-   docker-compose.yml is also DeployRocks-safe now if the dashboard falls back to it.
+2) Do NOT set a Compose file.
+   DeployRocks should use the root Dockerfile directly.
 
 3) Environment -> paste from deployrocks.env.example
    Replace SMTP_PASS, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY.
@@ -19,10 +16,10 @@ Academy Portal - DeployRocks (5 minutes)
 
    Do NOT override DATABASE_URL / REDIS_URL unless the dashboard shows them empty.
 
-4) Remove failed old separate "api" and "worker" apps if they exist.
-   The frontend app now contains frontend + API + workers.
+4) If you created older failed apps, delete them and create/deploy the main app again.
+   The root Dockerfile now contains frontend + API + workers.
 
-5) Retry deploy -> wait until frontend = Live
+5) Retry deploy -> wait until the main app = Live
 
 6) Smoke test (same host as frontend):
 

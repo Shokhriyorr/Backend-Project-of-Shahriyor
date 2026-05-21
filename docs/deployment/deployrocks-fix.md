@@ -4,24 +4,18 @@
 
 | Error | Cause |
 |-------|-------|
-| `worker` build failed / no web listeners | DeployRocks read a compose file with the local-only worker service |
+| `worker` build failed / no web listeners | DeployRocks read a compose file with multiple web apps |
 | `No web listeners specified` | The platform needs explicit `ports` entries for web apps |
-| `Network ... does not exist` | Dokku tried to attach separate apps to a shared network that DeployRocks did not create |
+| `Network ... does not exist` | DeployRocks entered multi-app Compose mode and tried to attach apps to a shared network |
 | `PASSWORD_RESET_TTL_MINUTES` random value | Platform auto-generated secrets for **numeric** env vars - you must set them manually |
 
 ## Fix (10 minutes)
 
-### 1. Change compose file in DeployRocks
+### 1. Use Dockerfile deploy mode
 
-Project settings -> **Compose file**:
+Do **not** set a Compose file in DeployRocks. The repository root `Dockerfile` is the production image.
 
-```text
-compose.deployrocks.yaml
-```
-
-`docker-compose.yml` is also safe now, but setting the explicit file keeps the dashboard clear.
-
-Both deploy compose files now deploy **one web app**: nginx serves the frontend and proxies to the API inside the same container. This avoids the broken cross-app Dokku network. Workers run inside the same app (`START_WORKERS_IN_API=true`). Postgres and Redis are created/linked by the platform.
+The root `Dockerfile` deploys **one web app**: nginx serves the frontend and proxies to the API inside the same container. This avoids the broken cross-app Dokku network. Workers run inside the same app (`START_WORKERS_IN_API=true`). Postgres and Redis are created/linked by the platform.
 
 ### 2. Delete failed old apps (if they exist)
 
@@ -30,7 +24,7 @@ In DeployRocks / Dokku apps list, remove old failed separate apps:
 `shokhriyorr-backend-project-of-shahriyor-api`
 `shokhriyorr-backend-project-of-shahriyor-worker`
 
-You only need the frontend app now; it contains frontend + API + workers.
+You only need the main app now; it contains frontend + API + workers.
 
 ### 3. Fix environment variables manually
 
@@ -61,7 +55,7 @@ Do **not** set `DATABASE_URL` or `REDIS_URL` yourself unless the dashboard shows
 
 ### 4. Redeploy
 
-Click **Retry deploy**. The dashboard should deploy only `frontend` as the web app.
+Click **Retry deploy**. The dashboard should build the root `Dockerfile` and deploy only the main app.
 
 ### 5. Smoke test
 
@@ -83,4 +77,4 @@ Open **Logs** for `...-api` and check for:
 
 Full stack (rubric): `docker compose -f docker-compose.local.yml up --build`.
 
-`compose.deployrocks.yaml` and root `docker-compose.yml` are **only** for the cloud platform shape.
+The root `Dockerfile` is for DeployRocks. `docker-compose.local.yml` is for local full-stack runs.
