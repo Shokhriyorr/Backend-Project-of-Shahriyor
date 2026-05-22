@@ -45,7 +45,7 @@ Blueprint:
    SMTP on `587` is not suitable for the free Render fallback.
 5. After first deploy, update `PUBLIC_APP_URL` and `CORS_ORIGINS` if Render
    assigned a different URL than:
-   `https://shokhriyorr-academy-portal.onrender.com`.
+   `https://backend-project-of-shahriyor.onrender.com`.
 6. Copy the working URL into `DEPLOYED_URL.txt` and smoke test `/health`,
    `/docs`, registration email verification, login, and enrollment.
 

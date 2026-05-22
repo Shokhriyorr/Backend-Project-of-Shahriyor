@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: shokhriyorr-academy-portal
+    name: backend-project-of-shahriyor
     runtime: docker
     dockerfilePath: Dockerfile
     dockerContext: .
@@ -35,9 +35,9 @@ services:
       - key: JWT_REFRESH_TTL_DAYS
         value: '30'
       - key: PUBLIC_APP_URL
-        value: https://shokhriyorr-academy-portal.onrender.com
+        value: https://backend-project-of-shahriyor.onrender.com
       - key: CORS_ORIGINS
-        value: https://shokhriyorr-academy-portal.onrender.com
+        value: https://backend-project-of-shahriyor.onrender.com
       - key: EMAIL_PROVIDER
         value: smtp
       - key: SMTP_HOST
