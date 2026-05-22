@@ -61,7 +61,6 @@ async function ensureRelationsExist(courseData) {
   }
 }
 
-// BYOI-3: Catalog search, filters, and cursor pagination for scalable reads.
 router.get(
   '/',
   optionalAuth,

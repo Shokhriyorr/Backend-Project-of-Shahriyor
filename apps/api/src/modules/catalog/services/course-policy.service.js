@@ -1,6 +1,5 @@
 import { ApiError } from '../../../shared/http/api.js'
 
-// BYOI-2: Course publication state machine (draft -> published -> archived).
 export function validatePublicationPayload(courseData) {
   const missingFields = []
 

@@ -1,4 +1,3 @@
-// BYOI-5: Analytics rollups in course_daily_stats to avoid heavy OLTP aggregates.
 import prisma from '../../../shared/database/prisma.js'
 import { env } from '../../../config/env.js'
 

@@ -1,6 +1,3 @@
-# DeployRocks / Dokku image.
-# Nginx serves the Vite frontend on $PORT and proxies API routes to Node on 127.0.0.1:5000.
-
 FROM node:22-bookworm-slim AS api-build
 
 RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
@@ -60,8 +57,6 @@ ENV BACKEND_PORT=5000
 ENV API_HOST=127.0.0.1
 ENV API_PORT=5000
 ENV DOCKER_BUILD=true
-# Bootstrap defaults for DeployRocks first deploy (before Environment tab unlocks).
-# Override these in the dashboard after the first Live deploy.
 ENV ENABLE_BACKGROUND_WORKERS=false
 ENV START_WORKERS_IN_API=true
 ENV ENABLE_DAILY_STATS_JOB=true

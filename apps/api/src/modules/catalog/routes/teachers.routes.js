@@ -170,7 +170,6 @@ router.put(
   }),
 )
 
-// BYOI-4: Referential integrity — block deletes while active course references exist.
 router.delete(
   '/:id',
   requireAuth,

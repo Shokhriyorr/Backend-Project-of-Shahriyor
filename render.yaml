@@ -1,10 +1,3 @@
-# Render.com fallback if DeployRocks keeps failing.
-# This uses the root Dockerfile: one public web service serves the React frontend,
-# proxies /api, /docs, and /health to Express, and runs BullMQ workers in-process.
-#
-# After first deploy, confirm the generated onrender.com URL and update
-# PUBLIC_APP_URL and CORS_ORIGINS if Render assigned a different subdomain.
-
 services:
   - type: web
     name: shokhriyorr-academy-portal

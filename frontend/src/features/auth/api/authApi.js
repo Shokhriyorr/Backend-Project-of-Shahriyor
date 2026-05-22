@@ -12,18 +12,14 @@ export const login = async (data) => {
 export const logout = async () => {
   const refreshToken = localStorage.getItem('academy_refresh_token')
   if (refreshToken) {
-    try {
-      await request(
-        '/auth/logout',
-        {
-          method: 'POST',
-          body: JSON.stringify({ refresh_token: refreshToken }),
-        },
-        false,
-      )
-    } catch {
-      // Local cleanup still happens even if the server session is already gone.
-    }
+    await request(
+      '/auth/logout',
+      {
+        method: 'POST',
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      },
+      false,
+    ).catch(() => null)
   }
   clearStoredSession()
 }

@@ -26,7 +26,6 @@ const openApiPath = new URL('../../../../openapi.yaml', import.meta.url)
 const openApiDocument = YAML.parse(fs.readFileSync(openApiPath, 'utf8'))
 
 if (!BigInt.prototype.toJSON) {
-  // Keep API responses JSON-safe without leaking BigInt internals into callers.
   BigInt.prototype.toJSON = function toJSON() {
     return this.toString()
   }

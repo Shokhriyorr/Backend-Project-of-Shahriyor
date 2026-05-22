@@ -10,7 +10,6 @@ function isRetryableTransactionError(error) {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2034'
 }
 
-// BYOI-1: Concurrency-safe enrollment with serializable transactions and seat compare-and-set.
 export async function createEnrollment({ req, userId, courseId }) {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {

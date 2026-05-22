@@ -1,7 +1,3 @@
-# Local full stack (rubric): backend + worker + frontend + PostgreSQL 15 + Redis.
-# Run: docker compose -f docker-compose.full.yml up --build
-# DeployRocks must NOT use this file - leave Compose file empty and use root Dockerfile.
-
 services:
   db:
     image: postgres:15-alpine

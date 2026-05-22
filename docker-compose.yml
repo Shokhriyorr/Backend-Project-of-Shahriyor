@@ -1,9 +1,2 @@
-# Mandatory rubric entrypoint.
-# Local full stack: backend + worker + frontend + PostgreSQL 15 + Redis.
-# Run: docker compose up --build
-#
-# DeployRocks currently mis-detects this compose file and creates split apps.
-# For DeployRocks Dockerfile mode, use branch: deployrocks-root-dockerfile.
-
 include:
   - docker-compose.full.yml

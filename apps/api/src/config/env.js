@@ -7,7 +7,6 @@ if (process.env.NODE_ENV !== 'test') {
   loadEnv()
 }
 
-// DeployRocks sometimes auto-generates random "secrets" for numeric TTL vars.
 const NUMERIC_ENV_DEFAULTS = {
   EMAIL_VERIFICATION_TTL_MINUTES: '1440',
   PASSWORD_RESET_TTL_MINUTES: '30',
@@ -130,8 +129,6 @@ let enableWorkers = rawEnv.ENABLE_BACKGROUND_WORKERS === 'true'
 const explicitRedisUrl = (rawEnv.REDIS_URL || '').trim()
 let redisUrl = explicitRedisUrl
 
-// DeployRocks Free often has Postgres only (no "Add Redis" button). Boot without workers
-// until REDIS_URL is set (Upstash URL in Environment or platform links Redis).
 if (!explicitRedisUrl && enableWorkers) {
   enableWorkers = false
   redisUrl = ''

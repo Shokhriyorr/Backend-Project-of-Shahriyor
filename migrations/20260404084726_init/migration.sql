@@ -1,10 +1,7 @@
--- CreateEnum
 CREATE TYPE "Role" AS ENUM ('student', 'admin');
 
--- CreateEnum
 CREATE TYPE "Category" AS ENUM ('Frontend', 'Backend');
 
--- CreateTable
 CREATE TABLE "app_users" (
     "id" BIGSERIAL NOT NULL,
     "email" VARCHAR(255) NOT NULL,
@@ -15,7 +12,6 @@ CREATE TABLE "app_users" (
     CONSTRAINT "app_users_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "teachers" (
     "id" BIGSERIAL NOT NULL,
     "full_name" VARCHAR(150) NOT NULL,
@@ -28,7 +24,6 @@ CREATE TABLE "teachers" (
     CONSTRAINT "teachers_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "courses" (
     "id" BIGSERIAL NOT NULL,
     "name" VARCHAR(150) NOT NULL,
@@ -44,7 +39,6 @@ CREATE TABLE "courses" (
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
 CREATE TABLE "enrollments" (
     "id" BIGSERIAL NOT NULL,
     "user_id" BIGINT NOT NULL,
@@ -54,17 +48,12 @@ CREATE TABLE "enrollments" (
     CONSTRAINT "enrollments_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
 CREATE UNIQUE INDEX "app_users_email_key" ON "app_users"("email");
 
--- CreateIndex
 CREATE UNIQUE INDEX "enrollments_user_id_course_id_key" ON "enrollments"("user_id", "course_id");
 
--- AddForeignKey
 ALTER TABLE "courses" ADD CONSTRAINT "courses_teacher_id_fkey" FOREIGN KEY ("teacher_id") REFERENCES "teachers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "app_users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE CASCADE ON UPDATE CASCADE;
