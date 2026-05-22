@@ -1,97 +1,44 @@
-═══════════════════════════════════════════════════════════════
-  ИСПРАВЛЕНИЕ DEPLOYROCKS / KAZI.ROCKS (финальная сдача)
-═══════════════════════════════════════════════════════════════
+DEPLOYROCKS FIX - CURRENT STATE
+===============================
 
-КРИТИЧНО: если по URL открывается страница "Aloha" — это НЕ ваш
-Academy Portal. Нужен повторный деплой из ЭТОГО репозитория.
+The app must deploy as ONE app from the root Dockerfile.
 
-───────────────────────────────────────────────────────────────
-ШАГ 1 — Запушить код в GitHub
-───────────────────────────────────────────────────────────────
+Do this in DeployRocks:
 
-  cd C:\Users\Shokh\Desktop\PROJECT
-  git add .
-  git commit -m "Add docker-compose.yml and fix deploy docs"
-  git push
+1. Settings -> Compose file: leave EMPTY.
+2. Do not use docker-compose.yml on DeployRocks.
+3. Delete failed split apps if they exist:
+   - shokhriyorr-backend-project-of-shahriyor-api
+   - shokhriyorr-backend-project-of-shahriyor-worker
+   - shokhriyorr-backend-project-of-shahriyor-frontend
+4. Keep only the main app:
+   - shokhriyorr-backend-project-of-shahriyor
+5. Environment live-now values:
+   START_WORKERS_IN_API=false
+   ENABLE_BACKGROUND_WORKERS=false
+   PASSWORD_RESET_TTL_MINUTES=30
+6. Leave REDIS_URL unset for now.
+7. Retry deploy.
 
-───────────────────────────────────────────────────────────────
-ШАГ 2 — DeployRocks: режим Dockerfile (без Compose file)
-───────────────────────────────────────────────────────────────
+Why:
 
-1. https://dashboard.deployrocks.com
-2. Проект → Settings
-3. Поле "Compose file" — выберите ОДНО из двух:
-     compose.deployrocks.yaml   (один контейнер web)
-   ИЛИ оставьте ПУСТЫМ (только корневой Dockerfile)
-   НЕ используйте docker-compose.yml на DeployRocks — платформа
-   создаст 6 отдельных apps (api, worker, frontend, db...) и упадёт.
-4. Деплой идёт из корневого Dockerfile (frontend + API + worker в одном контейнере)
+DeployRocks auto-detected docker-compose.yml and created separate api, worker,
+and frontend apps. That mode fails with:
 
-Подробно: docs/deployment/deployrocks-fix.md
+  Network shokhriyorr-backend-project-of-shahriyor-net does not exist
 
-Локально для рубрики (экзаменатор может проверить):
+The repository now keeps local full-stack Docker in docker-compose.full.yml.
+The root docker-compose.yml file is intentionally removed so DeployRocks builds
+only the root Dockerfile.
 
-  cp .env.example .env
-  docker compose up --build
+Expected success:
 
-───────────────────────────────────────────────────────────────
-ШАГ 3 — Удалить лишние приложения
-───────────────────────────────────────────────────────────────
+  https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health
+  -> {"ok":true}
 
-Удалите отдельные apps, если создавались:
+If deploy reaches nginx reload and fails with:
 
-  ...-worker
-  ...-api (если есть второй, кроме main)
+  host not found in upstream "invalid:3000"
 
-Должно остаться одно web-приложение с корневым Dockerfile.
-
-───────────────────────────────────────────────────────────────
-ШАГ 4 — Environment (числа для TTL — только цифры!)
-───────────────────────────────────────────────────────────────
-
-  EMAIL_VERIFICATION_TTL_MINUTES=1440
-  PASSWORD_RESET_TTL_MINUTES=30
-  STATS_JOB_REPEAT_MS=900000
-  JWT_ACCESS_TTL_SECONDS=900
-  JWT_REFRESH_TTL_DAYS=30
-
-  START_WORKERS_IN_API=true
-  ENABLE_BACKGROUND_WORKERS=true
-  EMAIL_PROVIDER=smtp
-
-  JWT_SECRET_KEY=<32+ символов>
-  JWT_REFRESH_SECRET_KEY=<другой 32+ символов>
-  SMTP_PASS=<Gmail App Password или SendGrid>
-  EMAIL_FROM_ADDRESS=Academy Portal <ваш@email.com>
-
-  PUBLIC_APP_URL=https://ВАШ-ДОМЕН.kazi.rocks
-  CORS_ORIGINS=https://ВАШ-ДОМЕН.kazi.rocks
-
-Секреты:
-
-  powershell -ExecutionPolicy Bypass -File scripts\generate-deploy-secrets.ps1
-
-DATABASE_URL и REDIS_URL — не менять, если платформа уже подставила.
-
-───────────────────────────────────────────────────────────────
-ШАГ 5 — Postgres и Redis зелёные → Deploy
-───────────────────────────────────────────────────────────────
-
-После Live проверьте:
-
-  https://ВАШ-ДОМЕН/health   → 200
-  https://ВАШ-ДОМЕН/docs    → Swagger
-  https://ВАШ-ДОМЕН/        → React Academy Portal (не Aloha!)
-
-Запишите URL в DEPLOYED_URL.txt и VIDEO_LINK.txt → git push
-
-───────────────────────────────────────────────────────────────
-Защита (oral defense)
-───────────────────────────────────────────────────────────────
-
-Откройте вкладки:
-  - Live frontend (DEPLOYED_URL.txt)
-  - Postman: docs/api/postman/academy-defense.postman_collection.json
-  - Swagger /docs на том же домене
-
-Сценарий: docs/defense-script.md
+that is a shared DeployRocks/Dokku host issue from another app config. Send
+DEPLOY-FIX-NOW.txt to DeployRocks support/admin.

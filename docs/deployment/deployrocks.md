@@ -24,7 +24,7 @@
 | `CORS_ORIGINS` | `https://<your-frontend-domain>` |
 | `ADMIN_NOTIFICATION_EMAILS` | your inbox for course-published alerts |
 
-6. Deploy and wait until the main app is live, with platform Postgres/Redis linked. Frontend, API routes, and workers run inside the same container on DeployRocks.
+6. Deploy and wait until the main app is live, with platform Postgres linked. Frontend and API routes run inside the same container on DeployRocks; enable Redis workers later after adding `REDIS_URL`.
 7. Copy the public frontend URL into `DEPLOYED_URL.txt` (first line only).
 8. Record the defense video against the deployed URL and update `VIDEO_LINK.txt`.
 

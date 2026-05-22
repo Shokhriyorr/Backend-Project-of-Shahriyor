@@ -15,7 +15,7 @@
 
 Do **not** set a Compose file in DeployRocks. The repository root `Dockerfile` is the production image.
 
-The root `Dockerfile` deploys **one web app**: nginx serves the frontend and proxies to the API inside the same container. This avoids the broken cross-app Dokku network. Workers run inside the same app (`START_WORKERS_IN_API=true`). Postgres and Redis are created/linked by the platform.
+The root `Dockerfile` deploys **one web app**: nginx serves the frontend and proxies to the API inside the same container. This avoids the broken cross-app Dokku network. For the first live deploy, Redis workers stay disabled until a Redis URL is available.
 
 ### 2. Delete failed old apps (if they exist)
 
@@ -37,8 +37,8 @@ STATS_JOB_REPEAT_MS=900000
 JWT_ACCESS_TTL_SECONDS=900
 JWT_REFRESH_TTL_DAYS=30
 
-START_WORKERS_IN_API=true
-ENABLE_BACKGROUND_WORKERS=true
+START_WORKERS_IN_API=false
+ENABLE_BACKGROUND_WORKERS=false
 EMAIL_PROVIDER=smtp
 ```
 
@@ -51,7 +51,7 @@ PUBLIC_APP_URL=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 CORS_ORIGINS=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 ```
 
-Do **not** set `DATABASE_URL` or `REDIS_URL` yourself unless the dashboard shows them empty - DeployRocks injects them.
+Do **not** set `DATABASE_URL` yourself unless the dashboard shows it empty. Leave `REDIS_URL` unset for the first deploy.
 
 ### 4. Redeploy
 
@@ -75,6 +75,6 @@ Open **Logs** for `...-api` and check for:
 
 ## Local Docker
 
-Full stack (rubric): `docker compose -f docker-compose.local.yml up --build`.
+Full stack (rubric): `docker compose -f docker-compose.full.yml up --build`.
 
 The root `Dockerfile` is for DeployRocks. `docker-compose.local.yml` is for local full-stack runs.

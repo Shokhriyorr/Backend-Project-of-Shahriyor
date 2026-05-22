@@ -1,7 +1,7 @@
 Academy Portal - Final Submission Checklist
 
-[x] docker compose up --build boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
-[x] docker-compose.yml orchestrates backend + worker + frontend + PostgreSQL 15 + Redis
+[x] docker compose -f docker-compose.full.yml up --build boots the local stack (backend + worker + frontend + PostgreSQL + Redis)
+[x] docker-compose.full.yml orchestrates backend + worker + frontend + PostgreSQL 15 + Redis
 [x] apps/api and frontend contain the backend and frontend source code
 [x] openapi.yaml contains the OpenAPI contract
 [x] migrations/ contains the Prisma migration history
@@ -38,11 +38,11 @@ Academy Portal - Final Submission Checklist
 
 Local full stack from .env.example:
   cp .env.example .env
-  docker compose up --build
+  docker compose -f docker-compose.full.yml up --build
   Frontend: http://localhost:8080
   Swagger:  http://localhost:8080/docs
 
 DeployRocks: use root Dockerfile, empty Compose file field (see DEPLOY-FIX-RU.txt)
 
 Local production overlay (SMTP):
-  docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+  docker compose -f docker-compose.full.yml -f docker-compose.prod.yml up --build
