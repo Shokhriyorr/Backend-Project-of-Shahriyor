@@ -4,9 +4,11 @@ DeployRocks: "Deploy the app first before setting environment variables"
 This is NORMAL. The dashboard unlocks Environment only AFTER the first deploy.
 
 CRITICAL - Compose file on DeployRocks:
+  Set deploy branch to: deployrocks-root-dockerfile
   Leave the Compose file field EMPTY.
   DeployRocks must build the root Dockerfile only.
-  Do NOT use docker-compose.yml (creates broken api/worker/frontend apps).
+  Do NOT deploy main on DeployRocks right now; main contains mandatory docker-compose.yml
+  for grading and DeployRocks turns it into broken api/worker/frontend apps.
 
 ORDER (do exactly this):
 

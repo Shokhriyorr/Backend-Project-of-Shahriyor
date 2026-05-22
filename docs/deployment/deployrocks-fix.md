@@ -13,7 +13,7 @@
 
 ### 1. Use Dockerfile deploy mode
 
-Do **not** set a Compose file in DeployRocks. The repository root `Dockerfile` is the production image.
+Use the `deployrocks-root-dockerfile` branch in DeployRocks and do **not** set a Compose file. That branch intentionally omits the root `docker-compose.yml` so DeployRocks builds the repository root `Dockerfile`.
 
 The root `Dockerfile` deploys **one web app**: nginx serves the frontend and proxies to the API inside the same container. This avoids the broken cross-app Dokku network. For the first live deploy, Redis workers stay disabled until a Redis URL is available.
 
@@ -55,7 +55,7 @@ Do **not** set `DATABASE_URL` yourself unless the dashboard shows it empty. Leav
 
 ### 4. Redeploy
 
-Click **Retry deploy**. The dashboard should build the root `Dockerfile` and deploy only the main app.
+Click **Retry deploy**. The dashboard should build the root `Dockerfile` from `deployrocks-root-dockerfile` and deploy only the main app.
 
 ### 5. Smoke test
 
@@ -75,6 +75,6 @@ Open **Logs** for `...-api` and check for:
 
 ## Local Docker
 
-Full stack (rubric): `docker compose -f docker-compose.full.yml up --build`.
+Full stack (rubric): `docker compose up --build`.
 
-The root `Dockerfile` is for DeployRocks. `docker-compose.local.yml` is for local full-stack runs.
+The root `Dockerfile` is for DeployRocks on branch `deployrocks-root-dockerfile`. `docker-compose.yml` is the mandatory local grading entrypoint.

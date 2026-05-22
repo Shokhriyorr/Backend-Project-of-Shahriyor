@@ -3,7 +3,8 @@ Academy Portal - DeployRocks (5 minutes)
 
 1) Open https://dashboard.deployrocks.com -> your project -> Settings
 
-2) Do NOT set a Compose file.
+2) Use deploy branch: deployrocks-root-dockerfile.
+   Do NOT set a Compose file.
    DeployRocks should use the root Dockerfile directly.
 
 3) Environment -> paste from deployrocks.env.example

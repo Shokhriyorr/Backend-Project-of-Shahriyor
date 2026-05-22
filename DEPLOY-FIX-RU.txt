@@ -6,19 +6,20 @@ The app must deploy as ONE app from the root Dockerfile.
 Do this in DeployRocks:
 
 1. Settings -> Compose file: leave EMPTY.
-2. Do not use docker-compose.yml on DeployRocks.
-3. Delete failed split apps if they exist:
+2. Deploy branch: deployrocks-root-dockerfile.
+3. Do not deploy main on DeployRocks right now; main contains mandatory docker-compose.yml for grading.
+4. Delete failed split apps if they exist:
    - shokhriyorr-backend-project-of-shahriyor-api
    - shokhriyorr-backend-project-of-shahriyor-worker
    - shokhriyorr-backend-project-of-shahriyor-frontend
-4. Keep only the main app:
+5. Keep only the main app:
    - shokhriyorr-backend-project-of-shahriyor
-5. Environment live-now values:
+6. Environment live-now values:
    START_WORKERS_IN_API=false
    ENABLE_BACKGROUND_WORKERS=false
    PASSWORD_RESET_TTL_MINUTES=30
-6. Leave REDIS_URL unset for now.
-7. Retry deploy.
+7. Leave REDIS_URL unset for now.
+8. Retry deploy.
 
 Why:
 
@@ -27,9 +28,9 @@ and frontend apps. That mode fails with:
 
   Network shokhriyorr-backend-project-of-shahriyor-net does not exist
 
-The repository now keeps local full-stack Docker in docker-compose.full.yml.
-The root docker-compose.yml file is intentionally removed so DeployRocks builds
-only the root Dockerfile.
+The repository now keeps mandatory local full-stack Docker in docker-compose.yml
+on main, and keeps a DeployRocks-safe branch without root compose:
+deployrocks-root-dockerfile.
 
 Expected success:
 

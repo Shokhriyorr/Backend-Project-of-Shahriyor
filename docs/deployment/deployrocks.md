@@ -4,7 +4,7 @@
 
 1. Push the latest `main` branch to GitHub.
 2. Sign in at [dashboard.deployrocks.com](https://dashboard.deployrocks.com) and connect the repository.
-3. Use the default Dockerfile deployment. Do **not** set a Compose file; DeployRocks should build the root `Dockerfile`.
+3. Use branch `deployrocks-root-dockerfile` for DeployRocks. Do **not** set a Compose file; DeployRocks should build the root `Dockerfile`.
 4. If a deploy failed before, read **`docs/deployment/deployrocks-fix.md`**.
 5. Set environment variables in the platform dashboard (do not commit secrets):
 
