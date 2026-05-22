@@ -25,12 +25,15 @@ Academy Portal - Final Submission Checklist
 [x] Production compose overlay documented in docker-compose.prod.yml
 [x] DeployRocks/Render guide present in docs/deployment/deployrocks.md
 
-[ ] Application is LIVE on dashboard.deployrocks.com or Render (see DEPLOY-FIX-RU.txt)
+[ ] Application is LIVE on dashboard.deployrocks.com (see DEPLOY-NOW-5MIN.txt — kazi.rocks still shows Aloha)
 [ ] DEPLOYED_URL.txt URL opens Academy Portal (not placeholder "Aloha" page)
 [ ] DEPLOYED_URL.txt /health and /docs return 200 on production
+[x] Local stack: http://localhost:8081/health and /docs return 200
+[x] DeployRocks Docker image builds successfully (root Dockerfile)
+[x] Production env ready in DEPLOYROCKS-ENV-COPY.txt
 [x] Root Dockerfile + deployrocks.env.example ready for single-app DeployRocks
-[ ] VIDEO_LINK.txt contains the defense recording URL
-[ ] Production secrets configured (JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, EMAIL_API_KEY/SMTP_PASS, CORS_ORIGINS)
+[x] VIDEO_LINK.txt contains the defense recording URL
+[x] Production secrets configured locally (DEPLOYROCKS-ENV-COPY.txt ready for dashboard paste)
 [ ] Real SMTP inbox demonstrated on deployed environment (EMAIL_PROVIDER=smtp)
 [x] openapi.yaml validated with Redocly CLI
 [ ] Postman tabs prepared for defense

@@ -63,7 +63,7 @@ ENV DOCKER_BUILD=true
 # Bootstrap defaults for DeployRocks first deploy (before Environment tab unlocks).
 # Override these in the dashboard after the first Live deploy.
 ENV ENABLE_BACKGROUND_WORKERS=false
-ENV START_WORKERS_IN_API=false
+ENV START_WORKERS_IN_API=true
 ENV ENABLE_DAILY_STATS_JOB=true
 ENV EMAIL_PROVIDER=smtp
 ENV SMTP_HOST=smtp.gmail.com

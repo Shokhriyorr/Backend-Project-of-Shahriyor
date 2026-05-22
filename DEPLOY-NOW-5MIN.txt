@@ -1,0 +1,39 @@
+DEPLOY IN 5 MINUTES (DeployRocks)
+=================================
+
+Your code is ready. kazi.rocks shows "Aloha" because the app is NOT deployed yet.
+
+STEP 1 — GitHub push (main + deployrocks branch)
+  git add -A && git commit -m "deploy: production env and Dockerfile workers" && git push origin main
+  git push origin main:deployrocks-root-dockerfile
+
+STEP 2 — DeployRocks dashboard
+  Project: shokhriyorr-backend-project-of-shahriyor
+  Branch: deployrocks-root-dockerfile
+  Compose file: LEAVE EMPTY
+  Delete split apps if they exist (api, worker, frontend) — keep ONE app only.
+
+STEP 3 — Link PostgreSQL
+  Databases -> ...-db (Detached) -> Link -> Backend Project Of Shahriyor -> Linked
+
+STEP 4 — Environment (paste from DEPLOYROCKS-ENV-COPY.txt)
+  Copy every line from DEPLOYROCKS-ENV-COPY.txt into Environment tab.
+  Do NOT set REDIS_URL until Upstash is ready (emails still work via API fallback).
+
+STEP 5 — Retry deploy
+  Wait until Live. Then test:
+    https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/health  -> {"ok":true}
+    https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/docs     -> Swagger
+    https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks/         -> Academy Portal (NOT Aloha)
+
+STEP 6 — Update repo
+  First line of DEPLOYED_URL.txt = the kazi.rocks URL above.
+
+IF deploy fails with "host not found in upstream invalid:3000":
+  This is a shared DeployRocks host bug (another student's app). Email support with DEPLOY-FIX-NOW.txt.
+
+BACKUP for defense (local + tunnel):
+  docker compose up --build
+  Frontend: http://localhost:8080 (or 8081 if 8080 busy)
+  Run: npx --yes cloudflared tunnel --url http://localhost:8081
+  Put the https://....trycloudflare.com URL in DEPLOYED_URL.txt only if kazi.rocks still broken.
