@@ -1,3 +1,0 @@
-# Backward-compatible alias for the full local stack.
-include:
-  - docker-compose.full.yml
