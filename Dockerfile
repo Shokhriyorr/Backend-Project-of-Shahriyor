@@ -74,7 +74,6 @@ ENV EMAIL_FROM_ADDRESS=shah2007kill@gmail.com
 ENV PUBLIC_APP_URL=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 ENV CORS_ORIGINS=https://shokhriyorr-backend-project-of-shahriyor.kazi.rocks
 ENV EMAIL_VERIFICATION_TTL_MINUTES=1440
-ENV PASSWORD_RESET_TTL_MINUTES=30
 ENV STATS_JOB_REPEAT_MS=900000
 ENV JWT_ACCESS_TTL_SECONDS=900
 ENV JWT_REFRESH_TTL_DAYS=30

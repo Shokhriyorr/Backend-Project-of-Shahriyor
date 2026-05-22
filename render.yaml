@@ -1,11 +1,15 @@
 # Render.com fallback if DeployRocks keeps failing.
-# Create a Blueprint from this repo and set the same env vars as deployrocks.env.example
+# This uses the root Dockerfile: one public web service serves the React frontend,
+# proxies /api, /docs, and /health to Express, and runs BullMQ workers in-process.
+#
+# After first deploy, confirm the generated onrender.com URL and update
+# PUBLIC_APP_URL and CORS_ORIGINS if Render assigned a different subdomain.
 
 services:
   - type: web
-    name: academy-api
+    name: shokhriyorr-academy-portal
     runtime: docker
-    dockerfilePath: apps/api/Dockerfile.compose
+    dockerfilePath: Dockerfile
     dockerContext: .
     plan: free
     healthCheckPath: /health
@@ -14,12 +18,12 @@ services:
         value: production
       - key: ENVIRONMENT
         value: production
-      - key: PORT
-        value: 5000
-      - key: START_WORKERS_IN_API
-        value: 'true'
-      - key: ENABLE_BACKGROUND_WORKERS
-        value: 'true'
+      - key: BACKEND_PORT
+        value: '5000'
+      - key: API_HOST
+        value: 127.0.0.1
+      - key: API_PORT
+        value: '5000'
       - key: DATABASE_URL
         fromDatabase:
           name: academy-db
@@ -27,18 +31,66 @@ services:
       - key: REDIS_URL
         fromService:
           name: academy-redis
-          type: redis
+          type: keyvalue
           property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_REFRESH_SECRET_KEY
+        generateValue: true
+      - key: JWT_ACCESS_TTL_SECONDS
+        value: '900'
+      - key: JWT_REFRESH_TTL_DAYS
+        value: '30'
+      - key: PUBLIC_APP_URL
+        value: https://shokhriyorr-academy-portal.onrender.com
+      - key: CORS_ORIGINS
+        value: https://shokhriyorr-academy-portal.onrender.com
+      - key: EMAIL_PROVIDER
+        value: smtp
+      - key: SMTP_HOST
+        value: smtp.sendgrid.net
+      - key: SMTP_PORT
+        value: '2525'
+      - key: SMTP_USER
+        value: apikey
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM_ADDRESS
+        sync: false
+      - key: EMAIL_REPLY_TO
+        value: ''
+      - key: ENABLE_BACKGROUND_WORKERS
+        value: 'true'
+      - key: START_WORKERS_IN_API
+        value: 'true'
+      - key: ENABLE_DAILY_STATS_JOB
+        value: 'true'
+      - key: EMAIL_VERIFICATION_TTL_MINUTES
+        value: '1440'
+      - key: PASSWORD_RESET_TTL_MINUTES
+        value: '30'
+      - key: EMAIL_QUEUE_NAME
+        value: academy-email
+      - key: MAINTENANCE_QUEUE_NAME
+        value: academy-maintenance
+      - key: STATS_JOB_REPEAT_MS
+        value: '900000'
+      - key: ADMIN_NOTIFICATION_EMAILS
+        sync: false
+      - key: ADMIN_EMAIL
+        value: admin@academy.dev
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: Academy Admin
 
-  - type: web
-    name: academy-frontend
-    runtime: docker
-    dockerfilePath: frontend/Dockerfile.compose
-    dockerContext: frontend
+  - type: keyvalue
+    name: academy-redis
     plan: free
+    ipAllowList: []
 
 databases:
   - name: academy-db
     plan: free
     databaseName: academy_db
-    user: postgres
+    user: academy

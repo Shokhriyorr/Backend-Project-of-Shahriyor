@@ -30,12 +30,24 @@
 
 ## Render fallback
 
-Render can run the same Compose stack with a **Docker Compose** blueprint:
+Use Render only if DeployRocks keeps failing because of the shared nginx
+`invalid:3000` issue. The repository includes `render.yaml` for a one-click
+Blueprint:
 
 1. Create a new **Blueprint** from the repo.
-2. Use `docker-compose.local.yml` plus `docker-compose.prod.yml`.
-3. Configure the same environment variables in the Render dashboard.
-4. Expose the `frontend` service publicly and keep `db`/`redis` internal.
+2. Render will create one public Docker web service from the root `Dockerfile`,
+   plus managed Postgres and Key Value (Redis-compatible) services.
+3. During Blueprint setup, fill every `sync: false` secret:
+   `SMTP_PASS`, `EMAIL_FROM_ADDRESS`, `ADMIN_NOTIFICATION_EMAILS`, and
+   `ADMIN_PASSWORD`.
+4. Use a provider that supports SMTP port `2525` (SendGrid or Mailgun). Render
+   free web services block outbound SMTP on `25`, `465`, and `587`, so Gmail
+   SMTP on `587` is not suitable for the free Render fallback.
+5. After first deploy, update `PUBLIC_APP_URL` and `CORS_ORIGINS` if Render
+   assigned a different URL than:
+   `https://shokhriyorr-academy-portal.onrender.com`.
+6. Copy the working URL into `DEPLOYED_URL.txt` and smoke test `/health`,
+   `/docs`, registration email verification, login, and enrollment.
 
 ## Post-deploy smoke test
 

@@ -1,8 +1,1 @@
-https://REPLACE-WITH-YOUR-DEFENSE-VIDEO
-
-# Replace the first line with your unlisted defense video URL (YouTube or Google Drive).
-
-Requirements:
-- Follow docs/defense-script.md
-- Show the deployed public URL from DEPLOYED_URL.txt
-- Demonstrate real SMTP email delivery from production
+https://youtu.be/SOk8CPL5_LE
